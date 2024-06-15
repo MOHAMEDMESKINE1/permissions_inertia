@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RoleRequest;
-use App\Http\Resources\RoleResource;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
+use App\Http\Requests\RoleRequest;
 use Spatie\Permission\Models\Role;
+use App\Http\Resources\RoleResource;
 
 class RoleController extends Controller
 {
@@ -16,10 +16,19 @@ class RoleController extends Controller
      */
     public function index():Response
     {
-        $roles = Role::all();
+        $searchQuery = request()->input('search_role');
+        if($searchQuery){
+
+            $roles = Role::where('name', 'like','%'. $searchQuery.'%')->get(); 
+        }else{
+            $roles = Role::all();
+        }
+       
         return Inertia::render("Admin/Roles/RoleIndex",[
-            "roles" => RoleResource::collection($roles)
+            "roles" => RoleResource::collection($roles)         ,
+            'search_role' => $searchQuery
         ]);
+
     }
 
     /**
