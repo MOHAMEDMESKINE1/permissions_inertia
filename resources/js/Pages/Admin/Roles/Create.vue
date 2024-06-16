@@ -6,9 +6,14 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import VueMultiselect from "vue-multiselect";
 
+defineProps({
+    permissions: Array,
+})
 const form =useForm({
-    name:''
+    name:'',
+    permissions: [],
 });
 const submit = () => {
     form.post(route('roles.store'));
@@ -47,7 +52,17 @@ const submit = () => {
 
                         <InputError class="mt-2" :message="form.errors.name" />
                     </div>
-
+                    <div class="flex justify-start mt-4">
+                        <VueMultiselect
+                            v-model="form.permissions"
+                            :options="permissions"
+                            :multiple="true"
+                            :close-on-select="true"
+                            placeholder="Pick some"
+                            label="name"
+                            track-by="name"
+                        />
+                    </div>
                     
 
                 
@@ -63,6 +78,4 @@ const submit = () => {
     </AdminLayout>
 </template>
 
-<style lang="css" scoped>
-
-</style>
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>

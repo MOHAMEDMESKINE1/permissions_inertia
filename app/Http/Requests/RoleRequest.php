@@ -29,6 +29,10 @@ class RoleRequest extends FormRequest
                     'max:255', 
                     Rule::unique('roles','name')->ignore($this->role)
                 ],
+                'permissions' => [
+                    'sometimes',
+                    'array'
+                ],
                 [
                     'name.unique' => 'The role name has already been taken.'
                 ]

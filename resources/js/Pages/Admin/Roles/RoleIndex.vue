@@ -77,7 +77,7 @@ const searchRoles = () => {
                         </td>
                         <td class="px-6  py-4">
                             <Link :href="route('roles.edit',role.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
-                            <Link @click="confirmUserDeletion" :href="route('roles.destroy',role.id)"  method="delete" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</Link>
+                            <Link   :href="route('roles.destroy',role.id)"  method="delete" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</Link>
 
                         </td>
                          

@@ -6,8 +6,10 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests\RoleRequest;
+use App\Http\Resources\PermissionResource;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\RoleResource;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -36,7 +38,11 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Roles/Create');
+        $permissions = Permission::all();
+        return Inertia::render('Admin/Roles/Create',[
+            "permissions" =>PermissionResource::collection($permissions),
+
+        ]);
     }
 
     /**
@@ -45,7 +51,12 @@ class RoleController extends Controller
     public function store(RoleRequest $request)
     {
              
-         Role::create($request->validated());
+         $role = Role::create(["name"=>$request->name]);
+
+         if($request->has('permissions')){
+            
+            $role->syncPermissions($request->input('permissions.*.name'));
+         }
 
         return to_route('roles.index');
 
@@ -64,10 +75,13 @@ class RoleController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Role $role)
-    
     {
+        $permissions = Permission::all();
+        $role->load('permissions');
+
         return Inertia::render("Admin/Roles/Edit",[
-            "role" => new RoleResource($role)
+            "role" => new RoleResource($role),
+            "permissions" =>PermissionResource::collection($permissions),
         ]);
     }
 
@@ -76,9 +90,11 @@ class RoleController extends Controller
      */
     public function update(RoleRequest $request, Role $role)
     {
-       $role->update($request->validated());
-
-       return to_route('roles.index');
+       $role->update([
+        "name" => $request->name
+       ]);
+       $role->syncPermissions($request->input('permissions.*.name'));
+       return back();
     }
 
     /**
