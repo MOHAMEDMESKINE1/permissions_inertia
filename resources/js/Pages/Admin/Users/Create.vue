@@ -1,18 +1,28 @@
 <script setup>
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import VueMultiselect from "vue-multiselect";
+import { onMounted,watch } from "vue";
+
+defineProps({
+  
+    roles:Array,
+    permissions:Array,
+    
+})
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
+    roles:[],
+    permissions:[],
 });
-
 const submit = () => {
     form.post(route('users.store'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
@@ -86,6 +96,30 @@ const submit = () => {
 
                     <InputError class="mt-2" :message="form.errors.password_confirmation" />
                 </div>
+                <div class=" mt-4">
+                    <InputLabel for="role" value="Role" />
+                    <VueMultiselect
+                        v-model="form.roles"
+                        :options="roles"
+                        :multiple="true"
+                        :close-on-select="true"
+                        placeholder="Pick some"
+                        label="name"
+                        track-by="name"
+                    />
+                </div>
+                <div class=" mt-4">
+                    <InputLabel for="permissions" value="Permissions" />
+                    <VueMultiselect
+                        v-model="form.permissions"
+                        :options="permissions"
+                        :multiple="true"
+                        :close-on-select="true"
+                        placeholder="Pick some"
+                        label="name"
+                        track-by="name"
+                    />
+                </div>
 
                 <div class="flex items-center justify-start mt-4">
                   
@@ -99,3 +133,4 @@ const submit = () => {
       
     </AdminLayout>
 </template>
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>

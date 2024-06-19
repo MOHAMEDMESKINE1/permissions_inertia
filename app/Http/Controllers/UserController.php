@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
-use Rules\Password;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserRequest;
+use Spatie\Permission\Models\Role;
+use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\UserRequest;
+use Illuminate\Validation\Rules\Password;
+use App\Http\Resources\PermissionResource;
+ use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -39,7 +43,14 @@ class UserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Users/Create');
+        
+        $permissions =Permission::all();
+        $roles =Role::all();
+
+        return Inertia::render('Admin/Users/Create',[
+            "permissions" => PermissionResource::collection($permissions),
+            "roles" => RoleResource::collection($roles),
+        ]);
     }
 
     /**
@@ -47,17 +58,14 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-             
-         
-
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
-        return to_route('users.index');
-
+        $user->syncRoles($request->input('roles.*.name'));
+        $user->syncPermissions($request->input('permissions.*.name'));
          
     }
 
@@ -73,10 +81,16 @@ class UserController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(User $user)
-    
-    {
+    { 
+        $user->load(['roles','permissions']);
+        $permissions =Permission::all();
+        $roles =Role::all();
+
+       
         return Inertia::render("Admin/Users/Edit",[
-            "user" => new UserResource($user)
+            "user" => new UserResource($user),
+            "permissions" => PermissionResource::collection($permissions),
+            "roles" => RoleResource::collection($roles),
         ]);
     }
 
@@ -96,6 +110,8 @@ class UserController extends Controller
         // Update the user with the combined data
         $user->update($data);
 
+        $user->syncRoles($request->input('roles.*.name'));
+        $user->syncPermissions($request->input('permissions.*.name'));
 
         return to_route('users.index');
     }
