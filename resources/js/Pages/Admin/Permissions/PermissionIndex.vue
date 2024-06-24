@@ -1,14 +1,31 @@
 
 <script setup>
 import AdminLayout from  '@/Layouts/AdminLayout.vue'
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Modal from '@/Components/Modal.vue';
 
-const search_permissions = ref('')
 defineProps({
     permissions:Array,
     search_permission: String,
 })
+const form = useForm({})
+const showConfirmDeletePermission  = ref(false)
+const closeModal  = () => {
+    showConfirmDeletePermission.value = false;
+}
+const confirmDeletePermission  = () => {
+    showConfirmDeletePermission.value = true;
+}
+const deletePermission = (id) => {
+    form.delete(route('permissions.destroy',id),{
+        onSuccess : closeModal()
+    })
+    form.reset();
+}
+
 const searchQuery = ref('')
 const searchPermissions = () => {
       router.get(route('permissions.index'), { search_permission: searchQuery.value }, {
@@ -75,7 +92,24 @@ const searchPermissions = () => {
                         </td>
                         <td class="px-6  py-4">
                             <Link :href="route('permissions.edit',permission.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
-                            <Link @click="confirmUserDeletion" :href="route('permissions.destroy',permission.id)"  method="delete" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</Link>
+                            <!-- <Link @click="confirmUserDeletion" :href="route('permissions.destroy',permission.id)"  method="delete" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</Link> -->
+                            <button @click="confirmDeletePermission" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
+
+                            <!-- modal show -->
+                            <Modal :show="showConfirmDeletePermission" @close="closeModal">
+                                    <div class="p-6">
+                                        <h2 class="text-lg font-medium text-gray-900">
+                                            Are you sure you want to delete your Permission?
+                                        </h2>
+                                       
+
+                                        <div class="mt-4">
+                                            <DangerButton class="me-2" @click="deletePermission(role.id)">Delete</DangerButton>
+                                            <SecondaryButton @click="closeModal">Cancel</SecondaryButton>
+
+                                        </div>
+                                    </div>
+                            </Modal>
 
                         </td>
                          

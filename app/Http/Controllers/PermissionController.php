@@ -45,7 +45,7 @@ class PermissionController extends Controller
     public function store(PermissionRequest $request)
     {
              
-         permission::create($request->validated());
+         Permission::create($request->validated());
 
         return to_route('permissions.index');
 
@@ -74,7 +74,7 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(PermissionRequest $request, permission $permission)
+    public function update(PermissionRequest $request, Permission $permission)
     {
        $permission->update($request->validated());
 

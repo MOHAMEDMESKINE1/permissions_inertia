@@ -1,13 +1,31 @@
 
 <script setup>
 import AdminLayout from  '@/Layouts/AdminLayout.vue'
-import { Link, router } from '@inertiajs/vue3';
+import { Link,useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Modal from '@/Components/Modal.vue';
 
 defineProps({
     roles:Object,
     search_role: String,
 })
+const form = useForm({})
+const showConfirmDeleteRole  = ref(false)
+const closeModal  = () => {
+    showConfirmDeleteRole.value = false;
+}
+const confirmDeleteRole  = () => {
+    showConfirmDeleteRole.value = true;
+}
+
+const deleteRole = (id) => {
+    form.delete(route('roles.destroy',id),{
+        onSuccess : closeModal()
+    })
+    form.reset();
+}
 
 const searchQuery = ref('')
 const searchRoles = () => {
@@ -77,7 +95,23 @@ const searchRoles = () => {
                         </td>
                         <td class="px-6  py-4">
                             <Link :href="route('roles.edit',role.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
-                            <Link   :href="route('roles.destroy',role.id)"  method="delete" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</Link>
+                            <button @click="confirmDeleteRole" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
+
+                            <!-- modal show -->
+                            <Modal :show="showConfirmDeleteRole" @close="closeModal">
+                                    <div class="p-6">
+                                        <h2 class="text-lg font-medium text-gray-900">
+                                            Are you sure you want to delete your Role?
+                                        </h2>
+                                      
+
+                                        <div class="mt-4">
+                                            <DangerButton class="me-2" @click="deleteRole(role.id)">Delete</DangerButton>
+                                            <SecondaryButton @click="closeModal">Cancel</SecondaryButton>
+
+                                        </div>
+                                    </div>
+                            </Modal>
 
                         </td>
                          

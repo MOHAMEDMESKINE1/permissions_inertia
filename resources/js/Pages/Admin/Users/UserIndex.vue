@@ -1,14 +1,32 @@
 
 <script setup>
 import AdminLayout from  '@/Layouts/AdminLayout.vue'
-import { Link, router } from '@inertiajs/vue3';
+import Modal from '@/Components/Modal.vue';
+import DangerButton from '@/Components/DangerButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 defineProps({
     users:Object,
     search_user: String,
 })
+const form = useForm({})
+const showConfirmDeleteUser = ref(false)
 
+const closeModal  = () => {
+    showConfirmDeleteUser.value = false;
+}
+const confirmDeleteUser  = () => {
+    showConfirmDeleteUser.value = true;
+}
+
+const deleteUser = (id) => {
+    form.delete(route('users.destroy',id),{
+        onSuccess : closeModal()
+    })
+    form.reset();
+}
 const searchQuery = ref('')
 const searchUsers = () => {
       router.get(route('users.index'), { search_user: searchQuery.value }, {
@@ -72,8 +90,25 @@ const searchUsers = () => {
                         </td>
                         <td class="px-6  py-4">
                             <Link :href="route('users.edit',role.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
-                            <Link @click="confirmUserDeletion" :href="route('users.destroy',role.id)"  method="delete" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</Link>
+                            <button @click="confirmDeleteUser" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
 
+                            <!-- modal show -->
+                            <Modal :show="showConfirmDeleteUser" @close="closeModal">
+                              <div class="p-6">
+                                <h2 class="text-lg font-medium text-gray-900">
+                                    Are you sure you want to delete your User?
+                                </h2>
+                               
+
+                                <div class="mt-4">
+                                    <DangerButton class="me-2" @click="deleteUser(role.id)">Delete</DangerButton>
+                                    <SecondaryButton @click="closeModal">Cancel</SecondaryButton>
+
+                                </div>
+                              </div>
+
+
+                            </Modal>
                         </td>
                          
                     </tr>
