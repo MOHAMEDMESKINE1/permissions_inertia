@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\RevokePermissionFromUser;
 
 use App\Http\Controllers\RemoveRoleFromUserController;
@@ -11,6 +12,8 @@ use App\Http\Controllers\RevokePermissionFromRoleController;
 
 // Route::middleware(['auth','role:admin'])->group(function(){
     
+    // posts
+    Route::resource('/posts',PostController::class);
     // users
     Route::resource('/users',UserController::class);
   

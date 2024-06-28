@@ -9,8 +9,7 @@ import Modal from '@/Components/Modal.vue';
 
 defineProps({
     permissions:Array,
-    search_permission: String,
-})
+ })
 const form = useForm({})
 const showConfirmDeletePermission  = ref(false)
 const closeModal  = () => {

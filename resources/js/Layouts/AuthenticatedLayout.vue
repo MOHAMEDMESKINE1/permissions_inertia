@@ -40,6 +40,9 @@ const auth = usePage().props.auth.user;
                                 <NavLink v-if="hasRole('admin')"  :href="route('admin.index')" :active="route().current('admin.index')">
                                     Admin  
                                 </NavLink>
+                                <NavLink  :href="route('posts.index')" :active="route().current('posts.index')">
+                                    Posts  
+                                </NavLink>
                             </div>
                         </div>
 

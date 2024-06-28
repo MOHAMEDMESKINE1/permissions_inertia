@@ -5,14 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UserRequest;
-use Illuminate\Validation\Rules\Password;
 use App\Http\Resources\PermissionResource;
  use Spatie\Permission\Models\Permission;
 
@@ -33,7 +31,6 @@ class UserController extends Controller
        
         return Inertia::render("Admin/Users/UserIndex",[
             "users" => UserResource::collection($users)         ,
-            'search_user' => $searchQuery
         ]);
 
     }

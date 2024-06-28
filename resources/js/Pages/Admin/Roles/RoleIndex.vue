@@ -9,7 +9,7 @@ import Modal from '@/Components/Modal.vue';
 
 defineProps({
     roles:Object,
-    search_role: String,
+   
 })
 const form = useForm({})
 const showConfirmDeleteRole  = ref(false)

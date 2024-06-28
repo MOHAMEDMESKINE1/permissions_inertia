@@ -28,7 +28,6 @@ class RoleController extends Controller
        
         return Inertia::render("Admin/Roles/RoleIndex",[
             "roles" => RoleResource::collection($roles)         ,
-            'search_role' => $searchQuery
         ]);
 
     }
