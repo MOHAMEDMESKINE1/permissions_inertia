@@ -1,19 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminConTroller;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\RevokePermissionFromUser;
 
+use App\Http\Controllers\RevokePermissionFromUser;
 use App\Http\Controllers\RemoveRoleFromUserController;
 use App\Http\Controllers\RevokePermissionFromRoleController;
 
-// Route::middleware(['auth','role:admin'])->group(function(){
-    
-    // posts
-    Route::resource('/posts',PostController::class);
+Route::middleware(['auth','role:admin'])
+->prefix('/admin')
+->group(function(){
+    Route::get('/admin', [AdminConTroller::class, 'index'])->name('admin.index');
+
+   
     // users
     Route::resource('/users',UserController::class);
   
@@ -34,6 +37,7 @@ use App\Http\Controllers\RevokePermissionFromRoleController;
         ->name('users.roles.destroy');
 
 
-// });
+});
 
-
+ // posts
+ Route::resource('/posts',PostController::class)->middleware(['auth','role:admin|moderator|user']);

@@ -42,11 +42,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth','role:admin'])->group(function () {
-    Route::get('/admin', [AdminConTroller::class, 'index'])->name('admin.index');
     Route::get('/admin/{id}', [AdminConTroller::class, 'edit'])->name('admin.edit');
     Route::patch('/admin', [AdminConTroller::class, 'update'])->name('admin.update');
     Route::delete('/admin', [AdminConTroller::class, 'destroy'])->name('admin.destroy');
 });
-
-require __DIR__.'/auth.php';
 require __DIR__.'/permissions.php';
+require __DIR__.'/auth.php';

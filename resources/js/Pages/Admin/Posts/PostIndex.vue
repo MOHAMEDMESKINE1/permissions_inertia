@@ -6,11 +6,12 @@ import { ref } from 'vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
-
+import { usePermissions } from '@/composables/permissions';
 defineProps({
     posts:Object,
    
 })
+const {hasPermission} = usePermissions()
 const form = useForm({})
 const showConfirmDeletePost  = ref(false)
 const closeModal  = () => {
@@ -43,7 +44,7 @@ const searchPosts = () => {
             
             
             <Link :href="route('posts.create')">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                <button  v-if="hasPermission('create post')" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                     Create
                 </button>
 
@@ -94,8 +95,8 @@ const searchPosts = () => {
                             </div>
                         </td>
                         <td class="px-6  py-4">
-                            <Link :href="route('posts.edit',post.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
-                            <button @click="confirmDeletePost" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
+                            <Link  v-if="hasPermission('update post')" :href="route('posts.edit',post.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
+                            <button v-if="hasPermission('delete post')" @click="confirmDeletePost" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
 
                             <!-- modal show -->
                             <Modal :show="showConfirmDeletePost" @close="closeModal">
@@ -106,7 +107,7 @@ const searchPosts = () => {
                                       
 
                                         <div class="mt-4">
-                                            <DangerButton class="me-2" @click="deletePost(post.id)">Delete</DangerButton>
+                                            <DangerButton  class="me-2" @click="deletePost(post.id)">Delete</DangerButton>
                                             <SecondaryButton @click="closeModal">Cancel</SecondaryButton>
 
                                         </div>

@@ -36,6 +36,7 @@ class PostController extends Controller
      */
     public function create()
     {
+        $this->authorize('create',Post::class);
         return Inertia::render('Admin/Posts/Create');
     }
 
@@ -44,6 +45,7 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
+        $this->authorize('create',Post::class);
         Post::create($request->validated());
 
         return to_route('posts.index');
@@ -61,7 +63,7 @@ class PostController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(Post $post)
-    {
+    {       $this->authorize('update',$post);
             return Inertia::render('Admin/Posts/Edit',
     
                 ["post" => new PostResource($post)]
@@ -72,7 +74,8 @@ class PostController extends Controller
      * Update the specified resource in storage.
      */
     public function update(PostRequest $request, Post $post)
-    {
+    { 
+        $this->authorize('update',$post);
        $post->update($request->validated());
 
         return to_route('posts.index');
@@ -83,6 +86,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        $this->authorize('delete',$post);
         $post->delete();
         
         return to_route('posts.index');

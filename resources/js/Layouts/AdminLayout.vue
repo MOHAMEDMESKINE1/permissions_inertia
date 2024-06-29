@@ -18,12 +18,13 @@
                         <path d="M13 8a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V8Z" class="fill-current text-cyan-200 group-hover:text-cyan-300"></path>
                         <path d="M13 15a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-1Z" class="fill-current group-hover:text-sky-300"></path>
                     </svg>
-                    <span class="-mr-1 font-medium">Dashboard</span>
+                    <span class="-mr-1 font-medium">Dashboard </span>
                 </SideBarLink>
             </li>
-            <li>
+            <template v-if="hasRole('admin')">
+                <li>
                
-               <SideBarLink :href="route('users.index')" :active="route().current('users.index')">
+               <SideBarLink  :href="route('users.index')" :active="route().current('users.index')">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                 </svg>
@@ -34,7 +35,7 @@
 
             <li>
                
-                <SideBarLink :href="route('roles.index')" :active="route().current('roles.index')">
+                <SideBarLink  :href="route('roles.index')" :active="route().current('roles.index')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5" />
                     </svg>
@@ -45,7 +46,7 @@
             
             <li>
                
-                <SideBarLink :href="route('permissions.index')" :active="route().current('permissions.index')">
+                <SideBarLink  :href="route('permissions.index')" :active="route().current('permissions.index')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                     </svg>
@@ -53,9 +54,11 @@
                     <span class="group-hover:text-gray-700">Permissions</span>
                 </SideBarLink>
             </li>
+                 
+            </template>
             <li>
                
-                <SideBarLink :href="route('posts.index')" :active="route().current('posts.index')">
+                <SideBarLink  :href="route('posts.index')" :active="route().current('posts.index')">
                     <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                     </svg>
@@ -80,7 +83,7 @@
 <div class="ml-auto mb-6 lg:w-[75%] xl:w-[80%] 2xl:w-[85%]">
     <div class="sticky z-10 top-0 h-16 border-b bg-white lg:py-2.5">
         <div class="px-6 flex items-center justify-between space-x-4 2xl:container">
-            <h5 hidden class="text-2xl text-gray-600 font-medium lg:block">Dashboard</h5>
+            <h5 hidden class="text-2xl text-gray-600 font-medium lg:block">Hi {{ authUser.name ?? '' }} <span class="text-green-500"> ({{ authUser.roles.join(',') ?? '' }}) </span></h5>
             <button class="w-12 h-16 -mr-2 border-r lg:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 my-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -115,8 +118,10 @@
 
 <script setup>
 import SideBarLink from '@/Components/SideBarLink.vue';
+import { usePermissions } from '@/composables/permissions';
 import { Link } from '@inertiajs/vue3';
 
+const { authUser,hasRole} = usePermissions()
 </script>
 
 <style lang="css" scoped>

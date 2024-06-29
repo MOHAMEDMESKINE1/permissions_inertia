@@ -12,7 +12,7 @@ const showingNavigationDropdown = ref(false);
 const auth = usePage().props.auth.user;
 
 
- const {hasRole} = usePermissions()
+ const {hasRole,hasRoles} = usePermissions()
 </script>
 
 <template>
@@ -40,7 +40,7 @@ const auth = usePage().props.auth.user;
                                 <NavLink v-if="hasRole('admin')"  :href="route('admin.index')" :active="route().current('admin.index')">
                                     Admin  
                                 </NavLink>
-                                <NavLink  :href="route('posts.index')" :active="route().current('posts.index')">
+                                <NavLink v-if="hasRoles(['admin','moderator'])"  :href="route('posts.index')" :active="route().current('posts.index')">
                                     Posts  
                                 </NavLink>
                             </div>
