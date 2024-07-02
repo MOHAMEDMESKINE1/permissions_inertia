@@ -34,7 +34,7 @@ const submit = () => {
     <Head title="Create User" />
 
     <AdminLayout>
-        <div class="p-6 m-5 border   rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <div class="p-6 m-5   dark:bg-gray-800 dark:border-gray-700">
             <form @submit.prevent="submit">
                 <div>
                     <InputLabel for="name" value="Name" />

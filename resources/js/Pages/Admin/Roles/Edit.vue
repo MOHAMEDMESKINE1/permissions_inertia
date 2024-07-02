@@ -50,7 +50,7 @@ const submit = () => {
         </div>
         <div class="mx-5">
             <div
-                class="p-6 bg-white border border-gray-200 mx-auto rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+                class="p-6 bg-white  mx-auto  dark:bg-gray-800 dark:border-gray-700"
             >
                 <form @submit.prevent="submit" class="">
                     <div>

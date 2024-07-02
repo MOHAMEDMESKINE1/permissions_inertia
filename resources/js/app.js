@@ -6,6 +6,9 @@ import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import VueClickAway from "vue3-click-away";
+import PrimeVue from "primevue/config";
+import 'primeicons/primeicons.css'
+import "primevue/resources/themes/aura-light-green/theme.css"
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 import { initFlowbite } from 'flowbite';
 createInertiaApp({
@@ -15,6 +18,9 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(PrimeVue,{
+                unstyled: false,
+            })
             .use(VueClickAway) // Makes 'v-click-away' directive usable in every component
             .mount(el);
     },
