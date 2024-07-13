@@ -1,131 +1,182 @@
-
 <script setup>
-import AdminLayout from  '@/Layouts/AdminLayout.vue'
-import { Link,useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import Modal from '@/Components/Modal.vue';
+import AdminLayout from "@/Layouts/AdminLayout.vue";
+import {  useForm, router } from "@inertiajs/vue3";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+import ConfirmDialog from 'primevue/confirmdialog';
+import Toast from 'primevue/toast';
+import { ref } from "vue";
+import AddModal from "@/Pages/Admin/Roles/Modals/AddModal.vue";
+import EditModal from "@/Pages/Admin/Roles/Modals/EditModal.vue";
+import {
+    Table,
+    DropDownButton,
+    LightButtonIcon,
+    Button,
+    Pagination
+} from "vue-component-cua";
+const props = defineProps({
+    roles: Object,
+    permissions: Array,
+});
+const confirm = useConfirm();
+const toast = useToast();
+const form = useForm({});
 
-defineProps({
-    roles:Object,
-   
-})
-const form = useForm({})
-const showConfirmDeleteRole  = ref(false)
-const closeModal  = () => {
-    showConfirmDeleteRole.value = false;
-}
-const confirmDeleteRole  = () => {
-    showConfirmDeleteRole.value = true;
-}
 
 const deleteRole = (id) => {
-    form.delete(route('roles.destroy',id),{
-        onSuccess : closeModal()
-    })
-    form.reset();
+    form.delete(route("roles.destroy", id), {
+        onSuccess: () => {
+            toast.add({ severity: 'success', summary: 'bien Surpprimé', detail: ' ', life: 3000 });
+        },
+       
+    });
+  
+};
+const confirmDelete = (id) => {
+        confirm.require({
+            message: 'Etes vous sure de supprimez ? ',
+            header: 'Suppression',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Annuler',
+            acceptLabel: 'Supprimer',
+            rejectProps: {
+                label: 'Annuler',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptProps: {
+                label: 'Supprimer',
+                severity: 'danger'
+            },
+            accept: () => {
+                deleteRole(id)
+            },
+            reject: () => {
+                toast.add({ severity: 'error', summary: 'Annulé', detail: '  ', life: 3000 });
+
+            }
+    });
+    }
+
+const searchRoles = (searchQuery) => {
+    router.get(
+        route("roles.index"),
+        { search_role: searchQuery },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+};
+const changeCount = (rows) => {
+     router.post(route("set.rows"), { rows: rows.value });
+};
+const headers = ref([
+    {
+        display: true,
+        title: "ID",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Name",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Action",
+        toggle: false,
+        align: "end",
+    },
+]);
+
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+const selectedRole = ref(null);
+
+const showRoleModal = () => {
+    showAddModal.value = true;
+};
+
+const showRoleEditModal = (role) => {
+    showEditModal.value = true;
+    selectedRole.value = role
 }
 
-const searchQuery = ref('')
-const searchRoles = () => {
-      router.get(route('roles.index'), { search_role: searchQuery.value }, {
-        preserveState: true,
-        replace: true
-      });
-    };
 </script>
 
 <template>
     <AdminLayout>
         <div class="flex justify-between m-5">
             <h1>Roles Index</h1>
-            
-            
-            <Link :href="route('roles.create')">
-                <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                    Create
-                </button>
 
-            </Link>
+            <Button class="justify-end" @click="showRoleModal"
+                >Ajouter Role</Button
+            >
         </div>
-       <div class="mx-5">
-    
-        
-        <div class="relative overflow-x-auto p-3 shadow-sm sm:rounded-lg">
-            <div class="flex items-center justify-end flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white dark:bg-gray-900">
-                
-                <div class="flex">
-                    
-                    <form @submit.prevent="searchRoles" method="get">
-                        <input type="text" v-model="searchQuery" id="table-search-users" class=" mx-2 pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for roles">
-                        <button type="submit" class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-600 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
-                            Search
-                        </button>
-                    </form>
-                </div>
+        <div class="mx-5">
+            <div class="relative overflow-x-auto mb-3">
+                <Table
+                    :headers="headers"
+                    :data="roles.data"
+                    :checkable="false"
+                    @onSelect="selectItems"
+                    @onSearch="searchRoles"
+                    @onChangeCount="changeCount"
+                    :selectedCount="$page.props.rows"
+                >
+                    <template #column0="{ entity }">
+                        {{ entity.id }}
+                    </template>
+                    <template #column1="{ entity }">
+                        {{ entity.name }}
+                    </template>
+
+                    <template #column2="{ entity }">
+                        <LightButtonIcon
+                            icon="pi-trash"
+                            size="sm"
+                            @click="confirmDelete(entity)"
+                            class="mr-1"
+                            color="light"
+                        />
+                        <LightButtonIcon
+                            @click="showRoleEditModal(entity)"
+                            icon="pi-pencil"
+                            size="sm"
+                            class="mr-1"
+                            color="light"
+                        />
+                    </template>
+                </Table>
             </div>
-            <table class="w-full  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            ID
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            NAME
-                        </th>
-                      
-                        <th scope="col" class="px-6 py-3">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(role,index) in roles " :key="index" class="bg-white   dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="px-6 py-4">
-                           {{role.id}}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                    {{role.name}}
-                                </span>
-
-                            </div>
-                        </td>
-                        <td class="px-6  py-4">
-                            <Link :href="route('roles.edit',role.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
-                            <button @click="confirmDeleteRole" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
-
-                            <!-- modal show -->
-                            <Modal :show="showConfirmDeleteRole" @close="closeModal">
-                                    <div class="p-6">
-                                        <h2 class="text-lg font-medium text-gray-900">
-                                            Are you sure you want to delete your Role?
-                                        </h2>
-                                      
-
-                                        <div class="mt-4">
-                                            <DangerButton class="me-2" @click="deleteRole(role.id)">Delete</DangerButton>
-                                            <SecondaryButton @click="closeModal">Cancel</SecondaryButton>
-
-                                        </div>
-                                    </div>
-                            </Modal>
-
-                        </td>
-                         
-                    </tr>
-                   
-                </tbody>
-            </table>
         </div>
-       
+        <AddModal
+            :visible="showAddModal"
+            :permissions="permissions"
+            @onClose="showAddModal = false"
+        />
 
-       </div>
+        <EditModal
+            :visible="showEditModal"
+            :role="selectedRole"
+
+            :permissions="permissions"
+            @onClose="showEditModal = false"
+            v-if="showEditModal" 
+        />
+        <!-- confirm & toast -->
+            <ConfirmDialog/>
+            <Toast/>
+        <!-- confirm & toast -->
+
+        <div class="flex justify-end me-5">
+            <Pagination :links="roles.meta.links"/>
+        </div>
     </AdminLayout>
 </template>
 
-<style lang="css" scoped>
-
-</style>
+<style lang="css" scoped></style>

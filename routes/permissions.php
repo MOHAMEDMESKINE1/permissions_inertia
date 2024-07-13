@@ -1,18 +1,19 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminConTroller;
-use App\Http\Controllers\PermissionController;
 
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RevokePermissionFromUser;
 use App\Http\Controllers\RemoveRoleFromUserController;
 use App\Http\Controllers\RevokePermissionFromRoleController;
 
 Route::middleware(['auth','role:admin'])
-->prefix('/admin')
+->prefix('/admin/spatie')
 ->group(function(){
     Route::get('/admin', [AdminConTroller::class, 'index'])->name('admin.index');
 
@@ -41,3 +42,9 @@ Route::middleware(['auth','role:admin'])
 
  // posts
  Route::resource('/posts',PostController::class)->middleware(['auth','role:admin|moderator|user']);
+
+ Route::post('set/rows', function (Request $request) {
+
+    session()->put('rows', $request->rows);
+    return redirect()->back();
+})->name("set.rows")->middleware(['auth','role:admin|moderator|user']);;

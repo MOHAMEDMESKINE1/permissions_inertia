@@ -9,6 +9,8 @@ import VueClickAway from "vue3-click-away";
 import PrimeVue from "primevue/config";
 import 'primeicons/primeicons.css'
 import "primevue/resources/themes/aura-light-green/theme.css"
+import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 import { initFlowbite } from 'flowbite';
 createInertiaApp({
@@ -18,6 +20,8 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(ToastService)
+            .use(ConfirmationService)
             .use(PrimeVue,{
                 unstyled: false,
             })

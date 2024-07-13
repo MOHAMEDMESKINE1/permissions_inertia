@@ -21,13 +21,15 @@ class RoleController extends Controller
         $searchQuery = request()->input('search_role');
         if($searchQuery){
 
-            $roles = Role::where('name', 'like','%'. $searchQuery.'%')->get(); 
+            $roles = Role::where('name', 'like','%'. $searchQuery.'%')->paginate(session('rows',3)); 
         }else{
-            $roles = Role::all();
+            $roles = Role::paginate(session('rows',3));
         }
        
+        $permissions =Permission::All();
         return Inertia::render("Admin/Roles/RoleIndex",[
             "roles" => RoleResource::collection($roles)         ,
+            "permissions" => PermissionResource::collection($permissions),
         ]);
 
     }
@@ -37,11 +39,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::all();
-        return Inertia::render('Admin/Roles/Create',[
-            "permissions" =>PermissionResource::collection($permissions),
-
-        ]);
+       
     }
 
     /**
@@ -75,13 +73,7 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = Permission::all();
-        $role->load('permissions');
-
-        return Inertia::render("Admin/Roles/Edit",[
-            "role" => new RoleResource($role),
-            "permissions" =>PermissionResource::collection($permissions),
-        ]);
+       
     }
 
     /**
