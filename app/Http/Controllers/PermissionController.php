@@ -19,9 +19,9 @@ class PermissionController extends Controller
         $searchQuery = request()->input('search_permission');
         if($searchQuery){
 
-            $permissions = Permission::where('name', 'like','%'. $searchQuery.'%')->get(); 
+            $permissions = Permission::where('name', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
         }else{
-            $permissions = Permission::all();
+            $permissions = Permission::paginate(session('rows',10));
         }
        
         return Inertia::render("Admin/Permissions/PermissionIndex",[

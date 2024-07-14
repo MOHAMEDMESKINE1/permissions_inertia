@@ -34,6 +34,7 @@ const editRole = () => {
         onSuccess : () => {
             onClose(true);
             toast.add({ severity: 'success', summary: ' Bien Modifié', detail: '', life: 3000 });
+            editRoleForm.reset()
         }
     })
 }
