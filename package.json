@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "click-away": "^1.0.0",
-        "vue-component-cua": "^0.1.7",
+        "vue-component-cua": "^0.1.8",
         "vue-multiselect": "^3.0.0-beta.3",
         "vue3-click-away": "^1.2.4"
     }

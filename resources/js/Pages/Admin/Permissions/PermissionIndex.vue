@@ -163,13 +163,8 @@ const showPermissionEditModal = (permission) => {
             @onClose="showEditModal = false"
             v-if="showEditModal" 
         />
-        <!-- confirm & toast -->
-            <ConfirmDialog/>
-            <Toast/>
-        <!-- confirm & toast -->
-
         <div class="flex justify-end me-5">
-            <Pagination :links="permissions.meta.links"/>
+            <Pagination :links="permissions.meta.links" :item="dev"/>
         </div>
     </AdminLayout>
 </template>

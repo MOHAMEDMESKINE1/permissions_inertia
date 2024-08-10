@@ -1,13 +1,12 @@
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import {  useForm, router } from "@inertiajs/vue3";
+import {  useForm, router, Link } from "@inertiajs/vue3";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import ConfirmDialog from 'primevue/confirmdialog';
-import Toast from 'primevue/toast';
 import { ref } from "vue";
 import AddModal from "@/Pages/Admin/Roles/Modals/AddModal.vue";
 import EditModal from "@/Pages/Admin/Roles/Modals/EditModal.vue";
+
 import {
     Table,
     DropDownButton,
@@ -105,7 +104,7 @@ const showRoleEditModal = (role) => {
     showEditModal.value = true;
     selectedRole.value = role
 }
-
+const dev =ref('');
 </script>
 
 <template>
@@ -168,13 +167,8 @@ const showRoleEditModal = (role) => {
             @onClose="showEditModal = false"
             v-if="showEditModal" 
         />
-        <!-- confirm & toast -->
-            <ConfirmDialog/>
-            <Toast/>
-        <!-- confirm & toast -->
-
         <div class="flex justify-end me-5">
-            <Pagination :links="roles.meta.links"/>
+            <Pagination :links="roles.meta.links" :item="Link"/>
         </div>
     </AdminLayout>
 </template>

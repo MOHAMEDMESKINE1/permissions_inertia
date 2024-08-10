@@ -6,15 +6,18 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminConTroller;
-
+use App\Http\Controllers\Log\ActivityLogController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RevokePermissionFromUser;
 use App\Http\Controllers\RemoveRoleFromUserController;
 use App\Http\Controllers\RevokePermissionFromRoleController;
+use Laravel\Telescope\Http\Controllers\LogController;
 
 Route::middleware(['auth','role:admin'])
 ->prefix('/admin/spatie')
 ->group(function(){
+
+    Route::get('/log',ActivityLogController::class)->name('log.index');
     Route::get('/admin', [AdminConTroller::class, 'index'])->name('admin.index');
 
    
@@ -48,3 +51,4 @@ Route::middleware(['auth','role:admin'])
     session()->put('rows', $request->rows);
     return redirect()->back();
 })->name("set.rows")->middleware(['auth','role:admin|moderator|user']);;
+

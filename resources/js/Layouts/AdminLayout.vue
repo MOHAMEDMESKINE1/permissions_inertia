@@ -68,6 +68,18 @@
                 </SideBarLink>
             </li>
            
+            <li>
+               
+                <SideBarLink  :href="route('log.index')" :active="route().current('log.index')">
+                    <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+
+
+                    <span class="group-hover:text-gray-700">Logs</span>
+                </SideBarLink>
+            </li>
+           
         </ul>
     </div>
 
@@ -113,6 +125,24 @@
     <div>
         <slot/>
     </div>
+     <ConfirmDialog>
+            <template #container="{ message, acceptCallback, rejectCallback }">
+                <div class="flex w-96  flex-col align-items-center p-5 surface-overlay border-round">
+                    <div
+                        class="bg-primary  items-center rounded-md  content-center  h-10 w-10 -mt-8">
+                        <center> <i class="pi pi-question text-white"></i></center>
+                    </div>
+                    <span class="font-bold text-2xl block mb-2 mt-4">{{ message.header }}</span>
+                    <p class="mb-0">{{ message.message }}</p>
+                    <div class="flex flex-row-reverse gap-2 w-full mt-4">
+                        <LightButton @click="acceptCallback" class="cursor-pointer" color='primary'>Oui</LightButton>
+                        <LightButton @click="rejectCallback"  class="cursor-pointer" color='error'>Annuler</LightButton>
+
+                    </div>
+                </div>
+            </template>
+        </ConfirmDialog>
+        <Toast/>
 </div>
 </template>
 
@@ -120,7 +150,9 @@
 import SideBarLink from '@/Components/SideBarLink.vue';
 import { usePermissions } from '@/composables/permissions';
 import { Link } from '@inertiajs/vue3';
-
+import ConfirmDialog from 'primevue/confirmdialog';
+import {LightButton} from 'vue-component-cua'
+import Toast from 'primevue/toast';
 const { authUser,hasRole} = usePermissions()
 </script>
 

@@ -9,6 +9,7 @@ use App\Http\Requests\RoleRequest;
 use App\Http\Resources\PermissionResource;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\RoleResource;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
@@ -53,7 +54,13 @@ class RoleController extends Controller
          if($request->has('permissions')){
             
             $role->syncPermissions($request->input('permissions.*.name'));
-         }
+         };
+
+         $user = Auth::user();
+         activity()
+         ->performedOn($role)
+         ->causedBy($user)
+         ->log('created role');
 
         return to_route('roles.index');
 
