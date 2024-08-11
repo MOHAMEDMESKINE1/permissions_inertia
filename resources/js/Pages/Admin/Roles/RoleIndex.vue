@@ -154,21 +154,19 @@ const dev =ref('');
             </div>
         </div>
         <AddModal
+            v-if="showAddModal"
             :visible="showAddModal"
-            :permissions="permissions"
             @onClose="showAddModal = false"
         />
 
         <EditModal
             :visible="showEditModal"
-            :role="selectedRole"
-
-            :permissions="permissions"
+            :role="selectedRole"            
             @onClose="showEditModal = false"
             v-if="showEditModal" 
         />
         <div class="flex justify-end me-5">
-            <Pagination :links="roles.meta.links" :item="Link"/>
+            <Pagination :links="roles.meta.links" :type="Link"/>
         </div>
     </AdminLayout>
 </template>

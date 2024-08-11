@@ -16,12 +16,18 @@ import { useToast } from 'primevue/usetoast';
  import {
         Head,
         Link,
-        useForm
+        router,
+        useForm,
+        usePage
 } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
-const props = defineProps(['visible','permissions']);
+const props = defineProps(['visible']);
 
+
+const page = usePage();
+const isLoading = ref(false)
+const permissions = computed(()=> page.props.permissions)
 const toast = useToast();
 const addRoleForm = useForm({
     name:'',
@@ -34,7 +40,8 @@ const addRole = () => {
             onClose(true)
             toast.add({ severity: 'success', summary: ' Bien Ajouté', detail: '', life: 3000 });
             addRoleForm.reset()
-        }
+        },
+        only : ['permissions']
     })
 }
 
@@ -55,6 +62,13 @@ watch(modalVisible, (newVal) => {
     }
 });
 
+onMounted(()=>{
+    router.reload({
+        only:['permissions'],
+        onBefore : ()=> isLoading.value = true,
+        onFinish : () => isLoading.value = false
+    })
+})
 </script>
 
  <template>
@@ -66,15 +80,25 @@ watch(modalVisible, (newVal) => {
                     <LabelValidation v-if="addRoleForm.errors.name" class='mt-2' type='error'>
                         {{ addRoleForm . errors . name }}</LabelValidation>
                 </div>
-                <div class="my-3">
+                <div v-if="!isLoading" class="my-3">
                     
-                    <Select v-model='addRoleForm.permissions' optionValue="id" :selectItem='addRoleForm.permissions'
-                    :Items='props.permissions' filter :options='props.permissions' display='chip' optionLabel='name'
+                    <Select v-model='addRoleForm.permissions' 
+                    optionValue="id" 
+                    :selectItem='addRoleForm.permissions'
+                    :Items='permissions' 
+                    filter 
+                    :options='permissions' 
+                    display='chip' 
+                    optionLabel='name'
                     placeholder='Sélectionner une permission' /> 
 
                     <LabelValidation v-if="addRoleForm.errors.name" class='mt-2' type='error'>
                         {{ addRoleForm . errors . name }}</LabelValidation>
                 </div>
+                 <div v-else>
+                    <p>loading permissions ...</p>
+
+                 </div>
             </div>
 
      

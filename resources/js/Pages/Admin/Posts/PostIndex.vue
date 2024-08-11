@@ -7,15 +7,23 @@ import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { usePermissions } from '@/composables/permissions';
+import {Table,LightButtonIcon,Button} from 'vue-component-cua'
+import AddModal from './Modals/AddModal.vue';
 defineProps({
     posts:Object,
    
 })
 const {hasPermission} = usePermissions()
 const form = useForm({})
+
 const showConfirmDeletePost  = ref(false)
+
 const closeModal  = () => {
     showConfirmDeletePost.value = false;
+}
+const showAddModal =  ref(false)
+const showModal  = () => {
+    showAddModal.value = true;
 }
 const confirmDeletePost  = () => {
     showConfirmDeletePost.value = true;
@@ -28,13 +36,34 @@ const deletePost = (id) => {
     form.reset();
 }
 
-const searchQuery = ref('')
-const searchPosts = () => {
-      router.get(route('posts.index'), { search_post: searchQuery.value }, {
+const searchPosts = (searchQuery) => {
+      router.get(route('posts.index'), { search_post: searchQuery }, {
         preserveState: true,
         replace: true
       });
     };
+
+    const headers = ref([
+    {
+        display: true,
+        title: "ID",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Title",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Action",
+        toggle: false,
+        align: "end",
+    },
+]);
+
 </script>
 
 <template>
@@ -43,14 +72,14 @@ const searchPosts = () => {
             <h1>posts Index</h1>
             
             
-            <Link :href="route('posts.create')">
-                <button  v-if="hasPermission('create post')" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
-                    Create
-                </button>
+             
+            <Button @click="showModal"  v-if="hasPermission('create post')" color="primary" >
+                Create
+            </Button>
 
-            </Link>
+           
         </div>
-       <div class="mx-5">
+       <!-- <div class="mx-5">
     
         
         <div class="relative overflow-x-auto p-3 shadow-sm sm:rounded-lg">
@@ -98,8 +127,7 @@ const searchPosts = () => {
                             <Link  v-if="hasPermission('update post')" :href="route('posts.edit',post.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
                             <button v-if="hasPermission('delete post')" @click="confirmDeletePost" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
 
-                            <!-- modal show -->
-                            <Modal :show="showConfirmDeletePost" @close="closeModal">
+                             <Modal :show="showConfirmDeletePost" @close="closeModal">
                                     <div class="p-6">
                                         <h2 class="text-lg font-medium text-gray-900">
                                             Are you sure you want to delete your post?
@@ -123,8 +151,54 @@ const searchPosts = () => {
         </div>
        
 
-       </div>
+       </div> -->
+    
+       <div class="mx-5">
+            <div class="relative overflow-x-auto mb-3">
+                <Table
+                    :headers="headers"
+                    :data="posts"
+                    :checkable="false"
+                    @onSelect="selectItems"
+                    @onSearch="searchPosts"
+                    @onChangeCount="changeCount"
+                    :selectedCount="$page.props.rows"
+                >
+                    <template #column0="{ entity }">
+                        {{ entity.id }}
+                    </template>
+                    <template #column1="{ entity }">
+                        {{ entity.title }}
+                    </template>
+
+                    <template #column2="{ entity }">
+                        <LightButtonIcon
+                        v-if="hasPermission('delete post')"
+                            icon="pi-trash"
+                            size="sm"
+                            @click="confirmDeletePost(entity)"
+                            class="mr-1"
+                            color="light"
+                        />
+                        <LightButtonIcon
+                            v-if="hasPermission('update post')"
+                            @click="showPermissionEditModal(entity)"
+                            icon="pi-pencil"
+                            size="sm"
+                            class="mr-1"
+                            color="light"
+                        />
+                    </template>
+                </Table>
+            </div>
+        </div>
     </AdminLayout>
+
+    <AddModal
+        v-if="showAddModal"
+        :visible="showAddModal"
+         @onClose="showAddModal = false"
+        />
 </template>
 
 <style lang="css" scoped>

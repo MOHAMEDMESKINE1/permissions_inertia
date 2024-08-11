@@ -15,12 +15,16 @@ import { useToast } from 'primevue/usetoast';
  } from 'vue-component-cua'
  import {
       
-        useForm
+     router,
+        useForm,
+        usePage
 } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
-const props = defineProps(['visible','role','permissions']);
-
+const props = defineProps(['visible','role']);
+const page = usePage();
+const isLoading = ref(false)
+const permissions = computed(()=> page.props.permissions)
 const toast = useToast();
 
 // form  to edit role  data
@@ -28,14 +32,16 @@ const editRoleForm = useForm({
     name:props.role.name,
     permissions:props.role.permissions
 })
-
 const editRole = () => {
     editRoleForm.put(route('roles.update',props.role.id),{
         onSuccess : () => {
             onClose(true);
             toast.add({ severity: 'success', summary: ' Bien Modifié', detail: '', life: 3000 });
             editRoleForm.reset()
-        }
+        },
+        only:[
+            'permissions'
+        ]
     })
 }
 
@@ -55,7 +61,15 @@ watch(modalVisible, (newVal) => {
         emit('onClose');
     }
 });
+onMounted(()=>{
+    router.reload({
+        only:['permissions'],
+        onBefore : () => isLoading.value = true,
+        onFinish : () => isLoading.value = false,
+    })
+    console.log(editRoleForm.permissions);
 
+})
 </script>
 
  <template>
@@ -67,20 +81,25 @@ watch(modalVisible, (newVal) => {
                     <LabelValidation v-if="editRoleForm.errors.name" class='mt-2' type='error'>
                         {{ editRoleForm . errors . name }}</LabelValidation>
                 </div>
-                <div class="my-3">
+                <div class="my-3" v-if="!isLoading">
                     
                     <Select v-model='editRoleForm.permissions' 
                    
                     :selectItem='editRoleForm.permissions'
-                    :Items='props.permissions' 
+                    :Items='permissions' 
                     filter 
-                    :options='props.permissions' 
+                    :options='permissions' 
+                   
                     display='chip' 
                     optionLabel='name'
+                    ariaLabel="name"  
                     placeholder='Sélectionner une permission' /> 
 
                     <LabelValidation v-if="editRoleForm.errors.name" class='mt-2' type='error'>
                         {{ editRoleForm . errors . name }}</LabelValidation>
+                </div>
+                <div v-else>
+                    loading permissions ...
                 </div>
             </div>
 

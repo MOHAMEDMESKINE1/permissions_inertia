@@ -1,16 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
+ 
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests\RoleRequest;
-use App\Http\Resources\PermissionResource;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\RoleResource;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
+use App\Http\Resources\PermissionResource;
 
 class RoleController extends Controller
 {
@@ -22,16 +22,16 @@ class RoleController extends Controller
         $searchQuery = request()->input('search_role');
         if($searchQuery){
 
-            $roles = Role::where('name', 'like','%'. $searchQuery.'%')->paginate(session('rows',3)); 
+            $roles_ = Role::with('permissions')->where('name', 'like','%'. $searchQuery.'%')->paginate(session('rows',3)); 
         }else{
-            $roles = Role::paginate(session('rows',3));
+            $roles_ = Role::with('permissions')->paginate(session('rows',3));
         }
-       
-        $permissions =Permission::All();
-        return Inertia::render("Admin/Roles/RoleIndex",[
-            "roles" => RoleResource::collection($roles)         ,
-            "permissions" => PermissionResource::collection($permissions),
-        ]);
+        
+        $permissions =Inertia::lazy(fn()=> PermissionResource::collection(Permission::All('id','name')));
+        
+        $roles =RoleResource::collection($roles_) ;
+
+        return Inertia::render("Admin/Roles/RoleIndex",compact( "roles","permissions" ));
 
     }
 

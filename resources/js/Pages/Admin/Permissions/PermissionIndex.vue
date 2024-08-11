@@ -1,7 +1,7 @@
 
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import {  useForm, router } from "@inertiajs/vue3";
+import {  useForm, router, Link } from "@inertiajs/vue3";
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import ConfirmDialog from 'primevue/confirmdialog';
@@ -164,7 +164,7 @@ const showPermissionEditModal = (permission) => {
             v-if="showEditModal" 
         />
         <div class="flex justify-end me-5">
-            <Pagination :links="permissions.meta.links" :item="dev"/>
+            <Pagination :links="permissions.meta.links" :type="Link"/>
         </div>
     </AdminLayout>
 </template>
