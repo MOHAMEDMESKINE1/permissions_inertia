@@ -153,6 +153,7 @@ const showPermissionEditModal = (permission) => {
             </div>
         </div>
         <AddModal
+            v-if="showAddModal"
             :visible="showAddModal"
             @onClose="showAddModal = false"
         />

@@ -1,7 +1,5 @@
 <script setup>
 import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-
  import {
     Modal,
     Label,
@@ -9,27 +7,35 @@ import { useToast } from 'primevue/usetoast';
     Button,
     LabelValidation,
    
+    
+
+
  } from 'vue-component-cua'
  import {useForm} from '@inertiajs/vue3';
- import { useModal } from '@/utils/useUtils';
+import {  ref, watch } from 'vue';
+import { useModal } from '@/utils/useUtils';
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 
 const props = defineProps(['visible','post']);
 const toast = useToast();
 
-const form =useForm({
-    title:'',
+const editPostForm =useForm({
+    title: props.post.title,
    
 });
-const addPost = () => {
-    form.post(route('posts.store'),{
+
+const editPost = () => {
+    editPostForm.post(route('posts.store'),{
         onSuccess : () => {
             onClose(true)
-            toast.add({ severity: 'success', summary: ' Bien Ajouté', detail: '', life: 3000 });
-            form.reset()
+            toast.add({ severity: 'success', summary: ' Bien Modifié', detail: '', life: 3000 });
+            editPostForm.reset()
 
         }
     });
 };
+
 
 const emit = defineEmits(['onClose']);
 const { modalVisible, onClose } = useModal(props.visible,emit);
@@ -51,13 +57,13 @@ const closeModal = () => {
                             id="title"
                             type="title"
                             class="mt-1 p-2 border block w-full"
-                            v-model="form.title"
+                            v-model="editPostForm.title"
                             autofocus
                             autocomplete="title"
                         />
 
-                        <LabelValidation v-if="form.errors.title" class='mt-2' type='error'>
-                            {{ form . errors . title }}</LabelValidation>
+                        <LabelValidation v-if="editPostForm.errors.title" class='mt-2' type='error'>
+                            {{ editPostForm . errors . title }}</LabelValidation>
                     </div>
 
                    
@@ -67,7 +73,7 @@ const closeModal = () => {
      
                 <template #footer>
                     <div class="mt-4">
-                        <Button  @click="addPost" class="mx-2" color="success"  :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        <Button  @click="editPost" class="mx-2" color="success"  :class="{ 'opacity-25': editPostForm.processing }" :disabled="editPostForm.processing">
                             Enregistrer
                         </Button>
                         <Button   @click="closeModal">Cancel</Button>

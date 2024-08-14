@@ -20,9 +20,18 @@ import { useToast } from 'primevue/usetoast';
         useForm,
         usePage
 } from '@inertiajs/vue3';
-import { computed, onMounted, ref, watch } from 'vue';
-
+import { computed, onMounted,defineEmits,defineProps, ref, watch } from 'vue';
+import { useModal } from '@/utils/useUtils';
+ 
 const props = defineProps(['visible']);
+const emit = defineEmits(['onClose']);
+const { modalVisible, onClose } = useModal(props.visible,emit);
+
+const closeModal = () => {
+  modalVisible.value = false;
+  onClose();
+};
+
 
 
 const page = usePage();
@@ -45,23 +54,6 @@ const addRole = () => {
     })
 }
 
-
-//  onclose Modal
-const emit = defineEmits(['onClose']);
-
-const onClose = (value) => emit("onClose", value);
-
-const modalVisible = ref(props.visible)
-watch(() => props.visible, (newVal) => {
-    modalVisible.value = newVal;
-});
-
-watch(modalVisible, (newVal) => {
-    if (!newVal) {
-        emit('onClose');
-    }
-});
-
 onMounted(()=>{
     router.reload({
         only:['permissions'],
@@ -74,6 +66,7 @@ onMounted(()=>{
  <template>
    <Modal  v-model:visible="modalVisible"  header='Ajouter un role' size="md">
             <div class="p-6">
+                <h1>{{ message }}</h1>
                 <div class='my-3'>
                     <Label for='name'>Name</Label>
                     <TextInput v-model="addRoleForm.name" id='name' class='mt-1 block w-full' placeholder='name ...' />
@@ -105,7 +98,7 @@ onMounted(()=>{
                 <template #footer>
                     <div class="mt-4">
                         <Button color="success" class="me-2" @click="addRole" :disabled="addRoleForm.processing">Enregistrer</Button>
-                        <Button   @click="onClose">Cancel</Button>
+                        <Button   @click="closeModal">Cancel</Button>
                     </div>
                 </template>
         </Modal>

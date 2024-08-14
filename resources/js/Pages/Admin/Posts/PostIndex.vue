@@ -9,25 +9,57 @@ import Modal from '@/Components/Modal.vue';
 import { usePermissions } from '@/composables/permissions';
 import {Table,LightButtonIcon,Button} from 'vue-component-cua'
 import AddModal from './Modals/AddModal.vue';
+import EditModal from './Modals/EditModal.vue';
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+
 defineProps({
     posts:Object,
    
 })
 const {hasPermission} = usePermissions()
+const toast = useToast();
+const confirm = useConfirm();
+
 const form = useForm({})
+const selectedPost = ref('')
 
 const showConfirmDeletePost  = ref(false)
 
 const closeModal  = () => {
     showConfirmDeletePost.value = false;
 }
+
 const showAddModal =  ref(false)
 const showModal  = () => {
     showAddModal.value = true;
 }
-const confirmDeletePost  = () => {
-    showConfirmDeletePost.value = true;
-}
+const confirmDeletePost = (id) => {
+        confirm.require({
+            message: 'Etes vous sure de supprimez ? ',
+            header: 'Suppression',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Annuler',
+            acceptLabel: 'Supprimer',
+            rejectProps: {
+                label: 'Annuler',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptProps: {
+                label: 'Supprimer',
+                severity: 'danger'
+            },
+            accept: () => {
+                deletePost(id)
+            },
+            reject: () => {
+                toast.add({ severity: 'error', summary: 'Annulé', detail: '  ', life: 3000 });
+
+            }
+    });
+    }
+
 
 const deletePost = (id) => {
     form.delete(route('posts.destroy',id),{
@@ -64,6 +96,17 @@ const searchPosts = (searchQuery) => {
     },
 ]);
 
+const showEditModal = ref(false);
+ 
+const showPostModal = () => {
+    showAddModal.value = true;
+};
+
+const showPostEditModal = (permission) => {
+    showEditModal.value = true;
+    selectedPost.value = permission
+}
+
 </script>
 
 <template>
@@ -73,7 +116,7 @@ const searchPosts = (searchQuery) => {
             
             
              
-            <Button @click="showModal"  v-if="hasPermission('create post')" color="primary" >
+            <Button @click="showPostModal"  v-if="hasPermission('create post')" color="primary" >
                 Create
             </Button>
 
@@ -182,7 +225,7 @@ const searchPosts = (searchQuery) => {
                         />
                         <LightButtonIcon
                             v-if="hasPermission('update post')"
-                            @click="showPermissionEditModal(entity)"
+                            @click="showPostEditModal(entity)"
                             icon="pi-pencil"
                             size="sm"
                             class="mr-1"
@@ -199,6 +242,12 @@ const searchPosts = (searchQuery) => {
         :visible="showAddModal"
          @onClose="showAddModal = false"
         />
+    <EditModal
+        :visible="showEditModal"
+        :post="selectedPost"
+        @onClose="showEditModal = false"
+        v-if="showEditModal" 
+    /> 
 </template>
 
 <style lang="css" scoped>

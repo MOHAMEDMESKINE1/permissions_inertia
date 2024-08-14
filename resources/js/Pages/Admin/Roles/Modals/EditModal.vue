@@ -20,6 +20,7 @@ import { useToast } from 'primevue/usetoast';
         usePage
 } from '@inertiajs/vue3';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useModal } from '@/utils/useUtils';
 
 const props = defineProps(['visible','role']);
 const page = usePage();
@@ -46,21 +47,16 @@ const editRole = () => {
 }
 
 
-//  onclose Modal
 const emit = defineEmits(['onClose']);
 
-const onClose = (value) => emit("onClose", value);
+const { modalVisible, onClose } = useModal(props.visible,emit);
 
-const modalVisible = ref(props.visible)
-watch(() => props.visible, (newVal) => {
-    modalVisible.value = newVal;
-});
+const closeModal = () => {
+  modalVisible.value = false;
+  onClose();
+};
 
-watch(modalVisible, (newVal) => {
-    if (!newVal) {
-        emit('onClose');
-    }
-});
+
 onMounted(()=>{
     router.reload({
         only:['permissions'],
@@ -107,7 +103,7 @@ onMounted(()=>{
                 <template #footer>
                     <div class="mt-4">
                         <Button color="success" class="me-2" @click="editRole" :disabled="editRoleForm.processing">Enregistrer</Button>
-                        <Button   @click="onClose">Cancel</Button>
+                        <Button   @click="closeModal">Cancel</Button>
                     </div>
                 </template>
         </Modal>

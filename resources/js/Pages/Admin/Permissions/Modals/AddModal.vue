@@ -19,6 +19,7 @@ import { useToast } from 'primevue/usetoast';
         useForm
 } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import { useModal } from '@/utils/useUtils';
 
 const props = defineProps(['visible']);
 
@@ -38,22 +39,13 @@ const addPermission = () => {
     })
 }
 
-
-//  onclose Modal
 const emit = defineEmits(['onClose']);
+const { modalVisible, onClose } = useModal(props.visible,emit);
 
-const onClose = (value) => emit("onClose", value);
-
-const modalVisible = ref(props.visible)
-watch(() => props.visible, (newVal) => {
-    modalVisible.value = newVal;
-});
-
-watch(modalVisible, (newVal) => {
-    if (!newVal) {
-        emit('onClose');
-    }
-});
+const closeModal = () => {
+  modalVisible.value = false;
+  onClose();
+};
 
 </script>
 
@@ -73,7 +65,7 @@ watch(modalVisible, (newVal) => {
                 <template #footer>
                     <div class="mt-4">
                         <Button color="success" class="me-2" @click="addPermission" :disabled="addPermissionForm.processing">Enregistrer</Button>
-                        <Button   @click="onClose">Cancel</Button>
+                        <Button   @click="closeModal">Cancel</Button>
                     </div>
                 </template>
         </Modal>
