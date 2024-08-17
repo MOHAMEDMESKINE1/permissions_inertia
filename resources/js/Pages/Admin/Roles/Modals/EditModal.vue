@@ -63,8 +63,7 @@ onMounted(()=>{
         onBefore : () => isLoading.value = true,
         onFinish : () => isLoading.value = false,
     })
-    console.log(editRoleForm.permissions);
-
+ 
 })
 </script>
 

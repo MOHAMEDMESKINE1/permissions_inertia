@@ -18,16 +18,16 @@ class PostController extends Controller
         $searchQuery = request()->input('search_post');
         if($searchQuery){
 
-            $posts = Post::where('title', 'like','%'. $searchQuery.'%')->get(); 
+            $posts = Post::where('title', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
         }else{
-            $posts = Post::all();
+            $posts = Post::paginate(session('rows',10));
 
         }
         
        
 
        return Inertia::render('Admin/Posts/PostIndex',[
-        "posts"=> PostResource::collection($posts)
+            "posts"=> PostResource::collection($posts)
        ]);
     }
 
@@ -46,6 +46,7 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {
         $this->authorize('create',Post::class);
+        
         Post::create($request->validated());
 
         return to_route('posts.index');

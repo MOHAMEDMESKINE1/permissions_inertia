@@ -41,7 +41,7 @@ class HandleInertiaRequests extends Middleware
             'auth'=>[
                 'user'=>  $request->user() ? new UserSharedResource($request->user()) : null
             ],
-            "rows" => session("rows",3),
+            "rows" => session("rows",10),
         ];
     }
 }

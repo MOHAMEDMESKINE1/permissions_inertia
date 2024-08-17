@@ -24,13 +24,18 @@ class UserController extends Controller
         $searchQuery = request()->input('search_user');
         if($searchQuery){
 
-            $users = User::where('name', 'like','%'. $searchQuery.'%')->get(); 
+            $users = User::where('name', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
         }else{
-            $users = User::all();
+            $users = User::paginate(session('rows',10));
         }
-       
+
+        $permissions =Inertia::lazy(fn()=> PermissionResource::collection(Permission::all('id','name')));
+        $roles =Inertia::lazy(fn()=>RoleResource::collection(Role::all('id','name')));
+        
         return Inertia::render("Admin/Users/UserIndex",[
-            "users" => UserResource::collection($users)         ,
+            "users" => UserResource::collection($users),
+            "permissions"=>$permissions,
+            "roles"=>$roles
         ]);
 
     }

@@ -12,16 +12,66 @@ import {
     DropDownButton,
     LightButtonIcon,
     Button,
+    Title,
     Pagination
 } from "vue-component-cua";
+
 const props = defineProps({
     roles: Object,
     permissions: Array,
 });
+
+
+const form = useForm({});
 const confirm = useConfirm();
 const toast = useToast();
-const form = useForm({});
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+const selectedRole = ref(null);
 
+const showRoleModal = () => {
+    showAddModal.value = true;
+};
+
+const showRoleEditModal = (role) => {
+    showEditModal.value = true;
+    selectedRole.value = role
+}
+const headers = ref([
+    {
+        display: true,
+        title: "ID",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Name",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Action",
+        toggle: false,
+        align: "end",
+    },
+]);
+
+const searchRoles = (searchQuery) => {
+    router.get(
+        route("roles.index"),
+        { search_role: searchQuery },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+};
+
+const changeCount = (rows) => {
+     router.post(route("set.rows"), { rows: rows.value });
+};
 
 const deleteRole = (id) => {
     form.delete(route("roles.destroy", id), {
@@ -32,6 +82,7 @@ const deleteRole = (id) => {
     });
   
 };
+
 const confirmDelete = (id) => {
         confirm.require({
             message: 'Etes vous sure de supprimez ? ',
@@ -56,61 +107,14 @@ const confirmDelete = (id) => {
 
             }
     });
-    }
-
-const searchRoles = (searchQuery) => {
-    router.get(
-        route("roles.index"),
-        { search_role: searchQuery },
-        {
-            preserveState: true,
-            replace: true,
-        }
-    );
-};
-const changeCount = (rows) => {
-     router.post(route("set.rows"), { rows: rows.value });
-};
-const headers = ref([
-    {
-        display: true,
-        title: "ID",
-        toggle: false,
-        align: "start",
-    },
-    {
-        display: true,
-        title: "Name",
-        toggle: false,
-        align: "start",
-    },
-    {
-        display: true,
-        title: "Action",
-        toggle: false,
-        align: "end",
-    },
-]);
-
-const showAddModal = ref(false);
-const showEditModal = ref(false);
-const selectedRole = ref(null);
-
-const showRoleModal = () => {
-    showAddModal.value = true;
-};
-
-const showRoleEditModal = (role) => {
-    showEditModal.value = true;
-    selectedRole.value = role
 }
-const dev =ref('');
+
 </script>
 
 <template>
     <AdminLayout>
         <div class="flex justify-between m-5">
-            <h1>Roles Index</h1>
+            <Title type="h5">Roles Index</Title>
 
             <Button class="justify-end" @click="showRoleModal"
                 >Ajouter Role</Button

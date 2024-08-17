@@ -22,9 +22,9 @@ class RoleController extends Controller
         $searchQuery = request()->input('search_role');
         if($searchQuery){
 
-            $roles_ = Role::with('permissions')->where('name', 'like','%'. $searchQuery.'%')->paginate(session('rows',3)); 
+            $roles_ = Role::with('permissions')->where('name', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
         }else{
-            $roles_ = Role::with('permissions')->paginate(session('rows',3));
+            $roles_ = Role::with('permissions')->paginate(session('rows',10));
         }
         
         $permissions =Inertia::lazy(fn()=> PermissionResource::collection(Permission::All('id','name')));

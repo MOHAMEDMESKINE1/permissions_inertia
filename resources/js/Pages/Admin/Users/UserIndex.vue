@@ -1,10 +1,12 @@
 
 <script setup>
 import AdminLayout from  '@/Layouts/AdminLayout.vue'
-import Modal from '@/Components/Modal.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import AddModal from './Modals/AddModal.vue';
+import EditModal from './Modals/EditModal.vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+
 import { ref } from 'vue';
 import {
 Title,
@@ -12,6 +14,7 @@ Text,
 Button,
 CheckBox ,
 Table,
+Pagination,
 LightButtonIcon ,
 DropDownButton,
 TextInput
@@ -19,14 +22,67 @@ TextInput
 defineProps({
     users:Object,
 })
+const confirm = useConfirm();
+const toast = useToast();
 const form = useForm({})
+
+const showAddModal = ref(false);
+const showEditModal = ref(false);
+const selectedUser = ref(null);
+
+const showUserModal = () => {
+    showAddModal.value = true;
+};
+
+
+const showUserEditModal = (user) => {
+    showEditModal.value = true;
+    selectedUser.value = user
+}
 const showConfirmDeleteUser = ref(false)
 
 const closeModal  = () => {
     showConfirmDeleteUser.value = false;
 }
-const confirmDeleteUser  = () => {
-    showConfirmDeleteUser.value = true;
+
+const headers = ref([
+    {
+        display : true,
+        title:'Id',
+        toggle:true,
+        align: "start",
+
+    },
+    {
+        display: true,
+        title:'Nom',
+        toggle:true,
+        align: "start",
+
+    },
+    {
+        display: true,
+        title:'Action',
+        toggle:true,
+        align: "end",
+
+    }
+])
+
+
+const searchUsers = (searchQuery) => {
+    router.get(
+        route("users.index"),
+        { search_user: searchQuery },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+};
+
+const changeCount = (rows) => {
+     router.post(route("set.rows"), { rows: rows.value });
 }
 
 const deleteUser = (id) => {
@@ -35,35 +91,32 @@ const deleteUser = (id) => {
     })
     form.reset();
 }
-const searchQuery = ref('')
-const searchUsers = () => {
-      router.get(route('users.index'), { search_user: searchQuery.value }, {
-        preserveState: true,
-        replace: true
-      });
-    };
+ 
+const confirmDeleteUser = (id) => {
+        confirm.require({
+            message: 'Etes vous sure de supprimez ? ',
+            header: 'Suppression',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Annuler',
+            acceptLabel: 'Supprimer',
+            rejectProps: {
+                label: 'Annuler',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptProps: {
+                label: 'Supprimer',
+                severity: 'danger'
+            },
+            accept: () => {
+                deleteUser(id)
+            },
+            reject: () => {
+                toast.add({ severity: 'error', summary: 'Annulé', detail: '  ', life: 3000 });
 
-const headers = ref([
-    {
-        display : true,
-        title:'Id',
-        toggle:true,
-
-    },
-    {
-        display: true,
-        title:'Nom',
-        toggle:true,
-
-    },
-    {
-        display: true,
-        title:'Email',
-        toggle:true,
-
-    }
-])
-
+            }
+    });
+}
 
 </script>
 
@@ -71,88 +124,61 @@ const headers = ref([
     <AdminLayout>
         <div class="flex justify-between m-5">
             <Title type="h5">Permissions </Title>
-            <Link :href="route('users.create')">
-                <Button color="primary">
-                    Create
-                </Button>
-
-            </Link>
+            <Button color="primary" @click="showUserModal">
+                Create
+            </Button>    
         </div>
             <div class="relative overflow-x-auto p-3 shadow-sm sm:rounded-lg">
-            <div class="flex items-center justify-end flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white dark:bg-gray-900">
-                
-                
-                    
-                <form @submit.prevent="searchUsers" method="get">
-                    
-                
-                    <div class="flex">
-                        <TextInput  type="text" v-model="searchQuery" id="table-search-users"  placeholder="Search for users"></TextInput>
-                    
-                    <Button  type="submit">
-                        Search
-                    </button>
-                    </div>
-                </form>
-                    
-                
+                <Table
+                    :headers="headers"
+                    :data="users.data"
+                    :checkable="false"
+                    @onSelect="selectItems"
+                    @onSearch="searchUsers"
+                    @onChangeCount="changeCount"
+                    :selectedCount="$page.props.rows"
+                >
+                    <template #column0="{ entity }">
+                        {{ entity.id }}
+                    </template>
+                    <template #column1="{ entity }">
+                        {{ entity.name }}
+                    </template>
+
+                    <template #column2="{ entity }">
+                        <LightButtonIcon
+                            icon="pi-trash"
+                            size="sm"
+                            @click="confirmDeleteUser(entity)"
+                            class="mr-1"
+                            color="light"
+                        />
+                        <LightButtonIcon
+                            @click="showUserEditModal(entity)"
+                            icon="pi-pencil"
+                            size="sm"
+                            class="mr-1"
+                            color="light"
+                        />
+                    </template>
+                </Table>
             </div>
-            <table class="w-full  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            ID
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            NAME
-                        </th>
-                      
-                        <th scope="col" class="px-6 py-3">
-                            Action
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(role,index) in users " :key="index" class="bg-white   dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                        <td class="px-6 py-4">
-                           {{role.id}}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                                    {{role.name}}
-                                </span>
-
-                            </div>
-                        </td>
-                        <td class="px-6  py-4">
-                            <Link :href="route('users.edit',role.id)"  class="font-medium mx-2 text-blue-600 dark:text-blue-500 hover:underline">edit</Link>
-                            <button @click="confirmDeleteUser" class="font-medium text-red-500 dark:text-red-500 hover:underline">delete</button>
-
-
-                            <Modal :show="showConfirmDeleteUser" @close="closeModal">
-                              <div class="p-6">
-                                <Title type="h5" >
-                                    Are you sure you want to delete your User?
-                                </Title>
-                               
-
-                                <div class="mt-4">
-                                    <Button color="error" class="me-2" @click="deleteUser(role.id)">Delete</Button>
-                                    <Button @click="closeModal">Cancel</Button>
-
-                                </div>
-                              </div>
-                            </Modal>
-                        </td>
-                         
-                    </tr>
-                   
-                </tbody>
-            </table>
-            
-        </div>
+            <div class="flex justify-end me-5">
+                <Pagination :links="users.meta.links" :type="Link"/>
+            </div>
     </AdminLayout>
+    <AddModal
+        v-if="showAddModal"
+        :visible="showAddModal"
+         @onClose="showAddModal = false"
+        />
+    <EditModal
+    v-if="showEditModal" 
+    :visible="showEditModal"
+    :user="selectedUser"
+    @onClose="showEditModal = false"
+   
+/> 
 </template>
 
 <style lang="css" scoped>
