@@ -18,9 +18,9 @@ class PostController extends Controller
         $searchQuery = request()->input('search_post');
         if($searchQuery){
 
-            $posts = Post::where('title', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
+            $posts = Post::with('media')->where('title', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
         }else{
-            $posts = Post::paginate(session('rows',10));
+            $posts = Post::with('media')->paginate(session('rows',10));
 
         }
         
@@ -47,9 +47,13 @@ class PostController extends Controller
     {
         $this->authorize('create',Post::class);
         
-        Post::create($request->validated());
+       $post =  Post::create($request->validated());
 
-        return to_route('posts.index');
+       if($post){
+        $post->addMediaFromRequest('image')->toMediaCollection('posts');
+       }
+
+        return redirect()->back();
     }
 
     /**
@@ -74,12 +78,28 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(Request $request, Post $post)
     { 
-        $this->authorize('update',$post);
-       $post->update($request->validated());
+       // Validate request data
+        $request->validate([
+            'title' => ['required'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:10000']
+        ]);
 
-        return to_route('posts.index');
+        // Authorize the action
+        $this->authorize('update', $post);
+
+        // Update the post title
+        $post->update(['title' => $request->input('title')]);
+
+        // Handle the image if it's present in the request
+        if ($request->hasFile('image')) {
+            // Clear any existing media before adding new one
+            $post->clearMediaCollection('posts');
+
+            // Add the new image to the media collection
+            $post->addMediaFromRequest('image')->toMediaCollection('posts');
+        }
     }
 
     /**

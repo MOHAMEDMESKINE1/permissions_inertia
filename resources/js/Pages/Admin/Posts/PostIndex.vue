@@ -3,14 +3,13 @@
 import AdminLayout from  '@/Layouts/AdminLayout.vue'
 import { Link,useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import Modal from '@/Components/Modal.vue';
 import { usePermissions } from '@/composables/permissions';
-import {Table,
+import {
+    Table,
     LightButtonIcon,
     Button,
-    Pagination
+    Pagination,
+    Avatar
 } from 'vue-component-cua'
 import AddModal from './Modals/AddModal.vue';
 import EditModal from './Modals/EditModal.vue';
@@ -60,7 +59,7 @@ const confirmDeletePost = (id) => {
 
             }
     });
-    }
+}
 
 
 const deletePost = (id) => {
@@ -77,16 +76,23 @@ const searchPosts = (searchQuery) => {
       });
     };
 
-    const headers = ref([
+const headers = ref([
     {
         display: true,
         title: "ID",
         toggle: false,
         align: "start",
     },
+  
     {
         display: true,
         title: "Title",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Image",
         toggle: false,
         align: "start",
     },
@@ -104,9 +110,9 @@ const showPostModal = () => {
     showAddModal.value = true;
 };
 
-const showPostEditModal = (permission) => {
+const showPostEditModal = (post) => {
     showEditModal.value = true;
-    selectedPost.value = permission
+    selectedPost.value = post
 }
 const changeCount = (rows) => {
      router.post(route("set.rows"), { rows: rows.value });
@@ -144,8 +150,13 @@ const changeCount = (rows) => {
                     <template #column1="{ entity }">
                         {{ entity.title }}
                     </template>
-
                     <template #column2="{ entity }">
+                        <Avatar v-if="entity.post_image" type='img' :src='entity.post_image' size='md' alt='avatar' rounded='md' />
+                        <Avatar v-else   :text="entity.title" size='md' alt='avatar' rounded='md' />
+                        
+                     </template>
+
+                    <template #column3="{ entity }">
                         <LightButtonIcon
                         v-if="hasPermission('delete post')"
                             icon="pi-trash"

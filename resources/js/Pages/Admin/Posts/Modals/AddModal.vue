@@ -7,6 +7,7 @@ import { useToast } from 'primevue/usetoast';
     Label,
     TextInput,
     Button,
+    FileInput,
     LabelValidation,
    
  } from 'vue-component-cua'
@@ -18,6 +19,7 @@ const toast = useToast();
 
 const form =useForm({
     title:'',
+    image:''
    
 });
 const addPost = () => {
@@ -58,6 +60,15 @@ const closeModal = () => {
 
                         <LabelValidation v-if="form.errors.title" class='mt-2' type='error'>
                             {{ form . errors . title }}</LabelValidation>
+                    </div>
+
+                    <div>
+                        <Label for="image">Image</Label>
+
+                        <FileInput   @input="form.image=$event.target.files[0]" id='image-file' />
+
+                        <LabelValidation v-if="form.errors.image" class='mt-2' type='error'>
+                            {{ form . errors . image }}</LabelValidation>
                     </div>
 
                    

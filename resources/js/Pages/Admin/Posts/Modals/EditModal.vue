@@ -6,30 +6,26 @@ import Toast from 'primevue/toast';
     TextInput,
     Button,
     LabelValidation,
-   
-    
-
-
+    FileInput
  } from 'vue-component-cua'
- import {useForm} from '@inertiajs/vue3';
-import {  ref, watch } from 'vue';
-import { useModal } from '@/utils/useUtils';
-import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
+ import {router, useForm} from '@inertiajs/vue3';
+ import { useModal } from '@/utils/useUtils';
+ import { useToast } from "primevue/usetoast";
 
 const props = defineProps(['visible','post']);
 const toast = useToast();
 
 const editPostForm =useForm({
-    title: props.post.title,
-   
+   title: props.post.title,
+   image: '',
+   _method: 'patch',
 });
 
 const editPost = () => {
-    editPostForm.post(route('posts.store'),{
+    editPostForm.post(route('posts.update',props.post.id),{
         onSuccess : () => {
             onClose(true)
-            toast.add({ severity: 'success', summary: ' Bien Modifié', detail: '', life: 3000 });
+            toast.add({ severity: 'success', summary: 'Bien Modifié', detail: '', life: 3000 });
             editPostForm.reset()
 
         }
@@ -44,10 +40,11 @@ const closeModal = () => {
   modalVisible.value = false;
   onClose();
 };
+
 </script>
 
  <template>
-   <Modal  v-model:visible="modalVisible"  header='Ajouter un role' size="md">
+   <Modal  v-model:visible="modalVisible"  header='modifier post' size="md">
             <div class="p-6">
                 
                     <div>
@@ -64,6 +61,14 @@ const closeModal = () => {
 
                         <LabelValidation v-if="editPostForm.errors.title" class='mt-2' type='error'>
                             {{ editPostForm . errors . title }}</LabelValidation>
+                    </div>
+                    <div>
+                        <Label for="image">Image</Label>
+
+                        <FileInput   @input="editPostForm.image=$event.target.files[0]" id='image-file' />
+                         
+                        <LabelValidation v-if="editPostForm.errors.image" class='mt-2' type='error'>
+                            {{ editPostForm . errors . image }}</LabelValidation>
                     </div>
 
                    
