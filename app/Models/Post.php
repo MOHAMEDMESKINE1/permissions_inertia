@@ -15,20 +15,5 @@ class Post extends Model  implements HasMedia
 
     protected $fillable = ["title"];
 
-    // public function registerMediaConversions(?Media $media = null): void
-    // {
-    //     $this
-    //         ->addMediaConversion('preview')
-    //         ->fit(Fit::Contain, 300, 300)
-    //         ->nonQueued();
-
-    // }
-    public function registerMediaCollections(): void
-    {
-        $this
-            ->addMediaCollection('posts')
-            ->singleFile();
-
-       
-    }
+     
 }
