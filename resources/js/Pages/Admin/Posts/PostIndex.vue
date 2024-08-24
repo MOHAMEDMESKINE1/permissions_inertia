@@ -83,10 +83,16 @@ const headers = ref([
         toggle: false,
         align: "start",
     },
-  
+   
     {
         display: true,
         title: "Title",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
+        title: "Comment",
         toggle: false,
         align: "start",
     },
@@ -149,14 +155,23 @@ const changeCount = (rows) => {
                     </template>
                     <template #column1="{ entity }">
                         {{ entity.title }}
+
                     </template>
                     <template #column2="{ entity }">
+                        <div v-for="comment in entity?.comments" :key="comment.id">
+                         
+                         <span>{{ comment.body ?? '-'}}</span>
+                     
+
+                    </div>
+                    </template>
+                    <template #column3="{ entity }">
                         <Avatar v-if="entity.post_image" type='img' :src='entity.post_image' size='md' alt='avatar' rounded='md' />
                         <Avatar v-else   :text="entity.title" size='md' alt='avatar' rounded='md' />
                         
                      </template>
 
-                    <template #column3="{ entity }">
+                    <template #column4="{ entity }">
                         <LightButtonIcon
                         v-if="hasPermission('delete post')"
                             icon="pi-trash"

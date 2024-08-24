@@ -5,6 +5,7 @@ import { useToast } from 'primevue/usetoast';
  import {
     Modal,
     Label,
+    TextArea,
     TextInput,
     Button,
     FileInput,
@@ -19,6 +20,7 @@ const toast = useToast();
 
 const form =useForm({
     title:'',
+    body:'',
     image:''
    
 });
@@ -60,6 +62,21 @@ const closeModal = () => {
 
                         <LabelValidation v-if="form.errors.title" class='mt-2' type='error'>
                             {{ form . errors . title }}</LabelValidation>
+                    </div>
+                    <div>
+                        <Label for="comment">comment</Label>
+
+                        <TextArea
+                            id="comment"
+                            type="comment"
+                            class="mt-1 p-2 border block w-full"
+                            v-model="form.body"
+                            autofocus
+                            autocomplete="comment"
+                        />
+
+                        <LabelValidation v-if="form.errors.body" class='mt-2' type='error'>
+                            {{ form . errors . body }}</LabelValidation>
                     </div>
 
                     <div>

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\CommentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostResource extends JsonResource
@@ -18,6 +19,8 @@ class PostResource extends JsonResource
             "id"=> $this->id,
             "title"=> $this->title,
             "post_image"=> $this->getFirstMediaUrl('posts'),
+            'comments' => CommentResource::collection($this->comments),
+
           
         ];
     }

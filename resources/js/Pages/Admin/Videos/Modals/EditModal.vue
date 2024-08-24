@@ -19,6 +19,7 @@ const toast = useToast();
 const editVideoForm =useForm({
    title: props.video.title,
    description: props.video.description,
+   body: props.video.comments.map(comment => comment.body),
    video: '',
    _method: 'patch',
 });
@@ -72,7 +73,22 @@ const closeModal = () => {
                         <LabelValidation v-if="editVideoForm.errors.description" class='mt-2' type='error'>
                             {{ editVideoForm . errors . description }}</LabelValidation>
                     </div>
+                    <div>
+                        <Label for="comment">comment</Label>
 
+                       <TextArea
+                            id="comment"
+                            type="comment"
+                            class="mt-1 p-2 border block w-full"
+                            v-model="editVideoForm.body"
+                            autofocus
+                            autocomplete="comment"
+                        /> 
+                        
+
+                        <LabelValidation v-if="editVideoForm.errors.body" class='mt-2' type='error'>
+                            {{ editVideoForm . errors . body }}</LabelValidation>
+                    </div>
                     <div>
                         <Label for="video">video</Label>
 

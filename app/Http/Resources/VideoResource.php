@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\CommentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class VideoResource extends JsonResource
@@ -19,6 +20,8 @@ class VideoResource extends JsonResource
             "title"=> $this->title,
             "description"=> $this->description,
             "video"=> $this->getFirstMediaUrl('videos'),
+            'comments' => CommentResource::collection($this->comments),
+
           
         ];
     }

@@ -92,6 +92,12 @@ const headers = ref([
     },
     {
         display: true,
+        title: "Comment",
+        toggle: false,
+        align: "start",
+    },
+    {
+        display: true,
         title: "Description",
         toggle: false,
         align: "start",
@@ -157,15 +163,20 @@ const changeCount = (rows) => {
                         {{ entity.title }}
                     </template>
                     <template #column2="{ entity }">
-                        {{ entity.description }}
+                         <div v-for="comment in entity.comments" :key="comment.id">
+                             <p>{{ comment.body ?? '-' }}</p>
+                         </div>
                     </template>
                     <template #column3="{ entity }">
+                        {{ entity.description }}
+                    </template>
+                    <template #column4="{ entity }">
                          
                         <iframe class="rounded-md h-22 shadow-sm" :src="entity.video" frameborder="0"></iframe>
                         
                      </template>
 
-                    <template #column4="{ entity }">
+                    <template #column5="{ entity }">
                         <LightButtonIcon
                         v-if="hasPermission('delete video')"
                             icon="pi-trash"

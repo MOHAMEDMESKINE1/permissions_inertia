@@ -6,6 +6,7 @@ import Toast from 'primevue/toast';
     TextInput,
     Button,
     LabelValidation,
+    TextArea,
     FileInput
  } from 'vue-component-cua'
  import {router, useForm} from '@inertiajs/vue3';
@@ -14,13 +15,14 @@ import Toast from 'primevue/toast';
 
 const props = defineProps(['visible','post']);
 const toast = useToast();
-
+ 
 const editPostForm =useForm({
    title: props.post.title,
+   body: props.post.comments.map(comment => comment.body),
    image: '',
    _method: 'patch',
 });
-
+ console.log(editPostForm);
 const editPost = () => {
     editPostForm.post(route('posts.update',props.post.id),{
         onSuccess : () => {
@@ -61,6 +63,22 @@ const closeModal = () => {
 
                         <LabelValidation v-if="editPostForm.errors.title" class='mt-2' type='error'>
                             {{ editPostForm . errors . title }}</LabelValidation>
+                    </div>
+                    <div>
+                        <Label for="comment">comment</Label>
+
+                       <TextArea
+                            id="comment"
+                            type="comment"
+                            class="mt-1 p-2 border block w-full"
+                            v-model="editPostForm.body"
+                            autofocus
+                            autocomplete="comment"
+                        /> 
+                        
+
+                        <LabelValidation v-if="editPostForm.errors.body" class='mt-2' type='error'>
+                            {{ editPostForm . errors . body }}</LabelValidation>
                     </div>
                     <div>
                         <Label for="image">Image</Label>
