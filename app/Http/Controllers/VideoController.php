@@ -118,9 +118,9 @@ class VideoController extends Controller
             ]
         );
 
-        // Update or create the comment associated with the post
+        // Update or create the comment associated with the video
         if ($request->filled('body')) {
-            // If the post already has a comment, update it; otherwise, create a new one
+            // If the video already has a comment, update it; otherwise, create a new one
             if ($video->comments()->exists()) {
 
                 $video->comments()->update([
