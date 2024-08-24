@@ -21,7 +21,8 @@ const toast = useToast();
 const addFormVideo =useForm({
     title:'',
     description:'',
-    video:''
+    video:'',
+    body:''
    
 });
 const addVideo = () => {
@@ -71,7 +72,21 @@ const closeModal = () => {
                         <LabelValidation v-if="addFormVideo.errors.description" class='mt-2' type='error'>
                             {{ addFormVideo . errors . description }}</LabelValidation>
                     </div>
+                    <div>
+                        <Label for="comment">comment</Label>
 
+                        <TextArea
+                            id="comment"
+                            type="comment"
+                            class="mt-1 p-2 border block w-full"
+                            v-model="addFormVideo.body"
+                            autofocus
+                            autocomplete="comment"
+                        />
+
+                        <LabelValidation v-if="addFormVideo.errors.body" class='mt-2' type='error'>
+                            {{ addFormVideo . errors . body }}</LabelValidation>
+                    </div>
                     <div class="mb-2">
                         <Label for="video">Video</Label>
 

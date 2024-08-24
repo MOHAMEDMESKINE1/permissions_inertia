@@ -18,9 +18,9 @@ class PostController extends Controller
         $searchQuery = request()->input('search_post');
         if($searchQuery){
 
-            $posts = Post::with('media')->where('title', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
+            $posts = Post::with(['media','comments'])->where('title', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
         }else{
-            $posts = Post::with('media')->paginate(session('rows',10));
+            $posts = Post::with(['media','comments'])->paginate(session('rows',10));
 
         }
         
@@ -49,9 +49,13 @@ class PostController extends Controller
         
        $post =  Post::create($request->validated());
 
+       $post->comments()->create(["body"=>$request->body]);
+
        if($post){
         $post->addMediaFromRequest('image')->toMediaCollection('posts');
+        
        }
+       
 
         return redirect()->back();
     }
@@ -85,14 +89,33 @@ class PostController extends Controller
        // Validate request data
         $request->validate([
             'title' => ['required'],
+            'body'=> ['nullable'],
             'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:10000']
         ]);
 
         // Authorize the action
         $this->authorize('update', $post);
+        
 
         // Update the post title
         $post->update(['title' => $request->input('title')]);
+         
+        // Update or create the comment associated with the post
+        if ($request->filled('body')) {
+            // If the post already has a comment, update it; otherwise, create a new one
+            if ($post->comments()->exists()) {
+
+                $post->comments()->update([
+                    'body' => $request->body
+                ]);
+            } else {
+                $post->comments()->create([
+                    'body' => $request->body
+                ]);
+            }
+        }
+
+    
 
         // Handle the image if it's present in the request
         if ($request->hasFile('image')) {
@@ -111,6 +134,7 @@ class PostController extends Controller
     {
         $this->authorize('delete',$post);
         $post->delete();
+        $post->comments()->delete();
         
         return to_route('posts.index');
     }

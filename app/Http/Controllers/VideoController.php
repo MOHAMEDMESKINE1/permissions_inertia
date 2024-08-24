@@ -18,13 +18,13 @@ class VideoController extends Controller
         $searchQuery = request()->input('search_video');
         if($searchQuery){
 
-            $videos =Video::with('media')
+            $videos =Video::with(['media','comments'])
             ->where('title', 'like','%'. $searchQuery.'%')
             ->orWhere('description', 'like','%'. $searchQuery.'%')
             ->paginate(session('rows',10)); 
         }else{
             
-            $videos =Video::with('media')->paginate(session('rows',10));
+            $videos =Video::with(['media','comments'])->paginate(session('rows',10));
 
         }
         
@@ -59,6 +59,8 @@ class VideoController extends Controller
         $this->authorize('create',Video::class);
         
        $video = Video::create($request->only('title','description','video'));
+       
+       $video->comments()->create(["body"=>$request->body]);
 
        if($video){
         $video->addMediaFromRequest('video')->toMediaCollection('videos');
@@ -116,6 +118,20 @@ class VideoController extends Controller
             ]
         );
 
+        // Update or create the comment associated with the post
+        if ($request->filled('body')) {
+            // If the post already has a comment, update it; otherwise, create a new one
+            if ($video->comments()->exists()) {
+
+                $video->comments()->update([
+                    'body' => $request->body
+                ]);
+            } else {
+                $video->comments()->create([
+                    'body' => $request->body
+                ]);
+            }
+        }
         // Handle the image if it's present in the request
         if ($request->hasFile('video')) {
             // Clear any existing media before adding new one
