@@ -11,6 +11,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RevokePermissionFromUser;
 use App\Http\Controllers\RemoveRoleFromUserController;
 use App\Http\Controllers\RevokePermissionFromRoleController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\VideoController;
 use Laravel\Telescope\Http\Controllers\LogController;
 
@@ -23,6 +24,9 @@ Route::middleware(['auth','role:admin'])
     
     // videos
     Route::resource('videos',VideoController::class)->middleware(['auth','role:admin|moderator|user']);
+   
+    // tags
+    Route::resource('tags',TagController::class)->middleware(['auth','role:admin']);
 
     Route::get('log',ActivityLogController::class)->name('log.index');
     Route::get('admin', [AdminConTroller::class, 'index'])->name('admin.index');

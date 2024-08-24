@@ -68,15 +68,7 @@
                 </SideBarLink>
             </li>
            
-            <li>
-               
-                <SideBarLink   :href="route('log.index')" :active="route().current('log.index')">
-                    <img width="25" height="25"  class=" flex items-center space-x-4 rounded-md text-gray-600 group hover:text-red-500" src="https://img.icons8.com/ios/50/edit-property.png" alt="edit-property"/>
-
-
-                    <span class="group-hover:text-gray-700">Logs</span>
-                </SideBarLink>
-            </li>
+           
             <li>
                
                 <SideBarLink   :href="route('videos.index')" :active="route().current('videos.index')">
@@ -85,7 +77,24 @@
                     <span class="group-hover:text-gray-700">Videos</span>
                 </SideBarLink>
             </li>
-           
+            
+            <li>
+               
+                <SideBarLink   :href="route('tags.index')" :active="route().current('tags.index')">
+                    <img width="25" height="25" src="https://img.icons8.com/ios/100/tags.png" alt="tags"/>
+                    <span class="group-hover:text-gray-700">Tags</span>
+                </SideBarLink>
+            </li>
+
+            <li>
+               
+               <SideBarLink   :href="route('log.index')" :active="route().current('log.index')">
+                   <img width="25" height="25"  class=" flex items-center space-x-4 rounded-md text-gray-600 group hover:text-red-500" src="https://img.icons8.com/ios/50/edit-property.png" alt="edit-property"/>
+
+
+                   <span class="group-hover:text-gray-700">Logs</span>
+               </SideBarLink>
+           </li>
         </ul>
     </div>
 
