@@ -20,6 +20,7 @@ class PostResource extends JsonResource
             "title"=> $this->title,
             "post_image"=> $this->getFirstMediaUrl('posts'),
             'comments' => CommentResource::collection($this->comments),
+            'tags' =>   $this->tags,
 
           
         ];

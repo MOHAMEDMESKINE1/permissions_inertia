@@ -21,6 +21,7 @@ class VideoResource extends JsonResource
             "description"=> $this->description,
             "video"=> $this->getFirstMediaUrl('videos'),
             'comments' => CommentResource::collection($this->comments),
+            'tags' => $this->tags,
 
           
         ];

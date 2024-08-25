@@ -18,13 +18,13 @@ class VideoController extends Controller
         $searchQuery = request()->input('search_video');
         if($searchQuery){
 
-            $videos =Video::with(['media','comments'])
+            $videos =Video::with(['media','comments','tags'])
             ->where('title', 'like','%'. $searchQuery.'%')
             ->orWhere('description', 'like','%'. $searchQuery.'%')
             ->paginate(session('rows',10)); 
         }else{
             
-            $videos =Video::with(['media','comments'])->paginate(session('rows',10));
+            $videos =Video::with(['media','comments','tags'])->paginate(session('rows',10));
 
         }
         

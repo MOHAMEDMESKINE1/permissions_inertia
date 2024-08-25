@@ -9,9 +9,6 @@ import { useToast } from 'primevue/usetoast';
     Button,
     LabelValidation,
     Select  
-    
-
-
  } from 'vue-component-cua'
  import {
       
@@ -84,7 +81,6 @@ onMounted(()=>{
                     :Items='permissions' 
                     filter 
                     :options='permissions' 
-                   
                     display='chip' 
                     optionLabel='name'
                     ariaLabel="name"  

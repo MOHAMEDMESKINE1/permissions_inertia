@@ -7,23 +7,29 @@ import { useToast } from 'primevue/usetoast';
     Label,
     TextArea,
     TextInput,
+    Select,
     Button,
     FileInput,
     LabelValidation,
    
  } from 'vue-component-cua'
- import {useForm} from '@inertiajs/vue3';
+ import {router, useForm, usePage} from '@inertiajs/vue3';
  import { useModal } from '@/utils/useUtils';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps(['visible','post']);
 const toast = useToast();
+const page = usePage();
+const isLoading = ref(false)
 
 const form =useForm({
     title:'',
     body:'',
+    tags:[],
     image:''
    
 });
+const tags = computed(()=> page.props.tags)
 const addPost = () => {
     form.post(route('posts.store'),{
         onSuccess : () => {
@@ -31,7 +37,8 @@ const addPost = () => {
             toast.add({ severity: 'success', summary: ' Bien Ajouté', detail: '', life: 3000 });
             form.reset()
 
-        }
+        },
+        only:['tags']
     });
 };
 
@@ -42,6 +49,14 @@ const closeModal = () => {
   modalVisible.value = false;
   onClose();
 };
+onMounted(()=>{
+    router.reload({
+        only:['tags'],
+        onBefore : ()=> isLoading.value = true,
+        onFinish : () => isLoading.value = false
+
+    })
+})
 </script>
 
  <template>
@@ -87,7 +102,24 @@ const closeModal = () => {
                         <LabelValidation v-if="form.errors.image" class='mt-2' type='error'>
                             {{ form . errors . image }}</LabelValidation>
                     </div>
+                    <div v-if="!isLoading" class="mt-3">
+                        <Select v-model='form.tags' 
+                        :selectItem='form.tags'
+                        :Items='tags' 
+                        filter 
+                        :options='tags' 
+                        display='chip' 
+                        optionValue="id" 
+                        optionLabel='name'
+                        placeholder='Sélectionner une tag' /> 
 
+                        <LabelValidation v-if="form.errors.tags" class='mt-2' type='error'>
+                            {{ form . errors . tags }}</LabelValidation>
+                    </div>
+                    <div v-else>
+                        loading tags ...
+
+                    </div>
                    
                 
             </div>

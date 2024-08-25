@@ -172,7 +172,8 @@ const changeCount = (rows) => {
                     </template>
                     <template #column4="{ entity }">
                          
-                        <iframe class="rounded-md h-22 shadow-sm" :src="entity.video" frameborder="0"></iframe>
+                        <iframe v-if="entity.video" class="rounded-md h-22 shadow-sm" :src="entity.video" frameborder="0"></iframe>
+                        <p v-else>loading videos ...</p>
                         
                      </template>
 
