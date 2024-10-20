@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use Spatie\Image\Enums\Fit;
-use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Post extends Model  implements HasMedia
+class Video extends Model  implements HasMedia
 {
     use HasFactory,InteractsWithMedia;
-
-    protected $fillable = ["title"];
-
- 
+    protected $fillable = ["title","description"];
     public function comments(){
 
         return $this->morphMany(Comment::class,'commentable');
@@ -25,4 +20,5 @@ class Post extends Model  implements HasMedia
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
+
 }

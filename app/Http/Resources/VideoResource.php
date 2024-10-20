@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\CommentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PostResource extends JsonResource
+class VideoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,9 +18,10 @@ class PostResource extends JsonResource
         return [
             "id"=> $this->id,
             "title"=> $this->title,
-            "post_image"=> $this->getFirstMediaUrl('posts'),
+            "description"=> $this->description,
+            "video"=> $this->getFirstMediaUrl('videos'),
             'comments' => CommentResource::collection($this->comments),
-            'tags' =>   $this->tags,
+            'tags' => $this->tags,
 
           
         ];

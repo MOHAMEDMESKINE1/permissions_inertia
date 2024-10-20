@@ -17,7 +17,7 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 
 defineProps({
-    posts:Object,
+    videos:Object,
    
 })
 const {hasPermission} = usePermissions()
@@ -25,17 +25,17 @@ const toast = useToast();
 const confirm = useConfirm();
 
 const form = useForm({})
-const selectedPost = ref('')
+const selectedVideo = ref('')
 
-const showConfirmDeletePost  = ref(false)
+const showConfirmDeleteVideo  = ref(false)
 
 const closeModal  = () => {
-    showConfirmDeletePost.value = false;
+    showConfirmDeleteVideo.value = false;
 }
 
 const showAddModal =  ref(false)
  
-const confirmDeletePost = (id) => {
+const confirmDeleteVideo = (id) => {
         confirm.require({
             message: 'Etes vous sure de supprimez ? ',
             header: 'Suppression',
@@ -52,7 +52,7 @@ const confirmDeletePost = (id) => {
                 severity: 'danger'
             },
             accept: () => {
-                deletePost(id)
+                deleteVideo(id)
             },
             reject: () => {
                 toast.add({ severity: 'error', summary: 'Annulé', detail: '  ', life: 3000 });
@@ -62,15 +62,15 @@ const confirmDeletePost = (id) => {
 }
 
 
-const deletePost = (id) => {
-    form.delete(route('posts.destroy',id),{
+const deleteVideo = (id) => {
+    form.delete(route('videos.destroy',id),{
         onSuccess : closeModal()
     })
     form.reset();
 }
 
-const searchPosts = (searchQuery) => {
-      router.get(route('posts.index'), { search_post: searchQuery }, {
+const searchVideos = (searchQuery) => {
+      router.get(route('videos.index'), { search_video: searchQuery }, {
         preserveState: true,
         replace: true
       });
@@ -83,7 +83,7 @@ const headers = ref([
         toggle: false,
         align: "start",
     },
-   
+  
     {
         display: true,
         title: "Title",
@@ -98,13 +98,13 @@ const headers = ref([
     },
     {
         display: true,
-        title: "tags",
+        title: "Description",
         toggle: false,
         align: "start",
     },
     {
         display: true,
-        title: "Image",
+        title: "Video",
         toggle: false,
         align: "start",
     },
@@ -118,13 +118,13 @@ const headers = ref([
 
 const showEditModal = ref(false);
  
-const showPostModal = () => {
+const showVideoModal = () => {
     showAddModal.value = true;
 };
 
-const showPostEditModal = (post) => {
+const showVideoEditModal = (video) => {
     showEditModal.value = true;
-    selectedPost.value = post
+    selectedVideo.value = video
 }
 const changeCount = (rows) => {
      router.post(route("set.rows"), { rows: rows.value });
@@ -134,11 +134,11 @@ const changeCount = (rows) => {
 <template>
     <AdminLayout>
         <div class="flex justify-between m-5">
-            <h1>posts Index</h1>
+            <h1>videos Index</h1>
             
             
              
-            <Button @click="showPostModal"  v-if="hasPermission('create post')" color="primary" >
+            <Button @click="showVideoModal"  v-if="hasPermission('create video')" color="primary" >
                 Create
             </Button>
 
@@ -149,10 +149,10 @@ const changeCount = (rows) => {
             <div class="relative overflow-x-auto mb-3">
                 <Table
                     :headers="headers"
-                    :data="posts.data"
+                    :data="videos.data"
                     :checkable="false"
                     @onSelect="selectItems"
-                    @onSearch="searchPosts"
+                    @onSearch="searchVideos"
                     @onChangeCount="changeCount"
                     :selectedCount="$page.props.rows"
                 >
@@ -161,42 +161,34 @@ const changeCount = (rows) => {
                     </template>
                     <template #column1="{ entity }">
                         {{ entity.title }}
-
                     </template>
                     <template #column2="{ entity }">
-                        <div v-for="comment in entity?.comments" :key="comment.id">
-                         
-                         <span>{{ comment.body ?? '-'}}</span>
-                     
-                    
-                    </div>
+                         <div v-for="comment in entity.comments" :key="comment.id">
+                             <p>{{ comment.body ?? '-' }}</p>
+                         </div>
                     </template>
                     <template #column3="{ entity }">
-                        <div v-for="tag in entity?.tags" :key="tag.id">
-                         
-                         <span>{{ tag.name }}</span>
-                     
-
-                    </div>
+                        {{ entity.description }}
                     </template>
                     <template #column4="{ entity }">
-                        <Avatar v-if="entity.post_image" type='img' :src='entity.post_image' size='md' alt='avatar' rounded='md' />
-                        <Avatar v-else   :text="entity.title" size='md' alt='avatar' rounded='md' />
+                         
+                        <iframe v-if="entity.video" class="rounded-md h-22 shadow-sm" :src="entity.video" frameborder="0"></iframe>
+                        <p v-else>loading videos ...</p>
                         
                      </template>
 
                     <template #column5="{ entity }">
                         <LightButtonIcon
-                        v-if="hasPermission('delete post')"
+                        v-if="hasPermission('delete video')"
                             icon="pi-trash"
                             size="sm"
-                            @click="confirmDeletePost(entity)"
+                            @click="confirmDeleteVideo(entity.id)"
                             class="mr-1"
                             color="light"
                         />
                         <LightButtonIcon
-                            v-if="hasPermission('update post')"
-                            @click="showPostEditModal(entity)"
+                            v-if="hasPermission('update video')"
+                            @click="showVideoEditModal(entity)"
                             icon="pi-pencil"
                             size="sm"
                             class="mr-1"
@@ -206,7 +198,7 @@ const changeCount = (rows) => {
                 </Table>
             </div>
             <div class="flex justify-end me-5">
-                <Pagination :links="posts.meta.links" :type="Link"/>
+                <Pagination :links="videos.meta.links" :type="Link"/>
             </div>
         </div>
     </AdminLayout>
@@ -218,7 +210,7 @@ const changeCount = (rows) => {
         />
     <EditModal
         :visible="showEditModal"
-        :post="selectedPost"
+        :video="selectedVideo"
         @onClose="showEditModal = false"
         v-if="showEditModal" 
     /> 
