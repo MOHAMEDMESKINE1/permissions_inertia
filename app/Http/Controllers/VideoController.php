@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Video;
 use Illuminate\Http\Request;
+use App\Services\UploadFileService;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\VideoResource;
 
 class VideoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $uploadFileService ;
+    public  function __construct(UploadFileService $uploadFileService ) {
+        $this->uploadFileService = $uploadFileService;
+    }
     public function index()
     {
         $searchQuery = request()->input('search_video');
@@ -63,8 +65,12 @@ class VideoController extends Controller
        $video->comments()->create(["body"=>$request->body]);
 
        if($video){
-        $video->addMediaFromRequest('video')->toMediaCollection('videos');
+        // $video->addMediaFromRequest('video')->toMediaCollection('videos');
+        $this->uploadFileService->uploadFile($video,'image','videos');
+
        }
+
+
        $user = Auth::user();
        activity()
        ->performedOn($video)

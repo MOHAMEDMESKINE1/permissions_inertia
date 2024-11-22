@@ -9,20 +9,27 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\TagResource;
+use App\Services\UploadFileService;
 
 class PostController extends Controller
 {
+    protected $uploadFileService ;
+
+    public  function __construct(UploadFileService $uploadFileService ) {
+        $this->uploadFileService = $uploadFileService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+       
         $searchQuery = request()->input('search_post');
         if($searchQuery){
 
             $posts = Post::with(['media','comments','tags'])->where('title', 'like','%'. $searchQuery.'%')->paginate(session('rows',10)); 
         }else{
-            $posts = Post::with(['media','comments','tags'])->paginate(session('rows',10));
+            $posts = Post::with(['media','comments','tags'])->paginate(session('rows',default: 10));
 
         }
         $tags = Tag::all();
@@ -47,18 +54,27 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        $this->authorize('create',Post::class);
+       
+        // $request->validate([
+        //     'title' => ['required'],
+        //     'tags'=> ['array'],
+        //     'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:10000']
+        // ]);
+      
+        // $this->authorize('create',Post::class);
+        
         
        $post =  Post::create($request->validated());
-
+         
         //morph comments
        $post->comments()->create(["body"=>$request->body]);
        
         //morph tags
        $post->tags()->attach($request->tags);
 
-       if($post){
-        $post->addMediaFromRequest('image')->toMediaCollection('posts');
+        if($post){
+
+         $this->uploadFileService->uploadFile( $post,'image','posts');
         
        }
        
@@ -90,6 +106,10 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     { 
+        // Authorize the action
+        $this->authorize('update', $post);
+
+        
         #this is a comment from test branch
         // Validate request data
         $request->validate([
@@ -98,14 +118,21 @@ class PostController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif', 'max:10000']
         ]);
 
-        // Authorize the action
-        $this->authorize('update', $post);
         
 
         // dd($request->tags);
         // Update the post title
         $post->update(['title' => $request->input('title')]);
-        
+
+          if ($request->hasFile('image')) {
+            // Clear any existing media before adding new one
+            $post->clearMediaCollection('posts');
+
+            // Add the new image to the media collection
+            // $post->addMediaFromRequest('image')->toMediaCollection('posts');
+            $this->uploadFileService->uploadFile($post,'image','posts');
+
+        }
         
         //morph tags
         if ($request->has('tags')) {
@@ -135,14 +162,7 @@ class PostController extends Controller
             }
         }
 
-        // Handle the image if it's present in the request
-        if ($request->hasFile('image')) {
-            // Clear any existing media before adding new one
-            $post->clearMediaCollection('posts');
-
-            // Add the new image to the media collection
-            $post->addMediaFromRequest('image')->toMediaCollection('posts');
-        }
+       
     }
 
     /**

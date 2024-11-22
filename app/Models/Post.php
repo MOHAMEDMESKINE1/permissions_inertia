@@ -13,7 +13,7 @@ class Post extends Model  implements HasMedia
 {
     use HasFactory,InteractsWithMedia;
 
-    protected $fillable = ["title"];
+    protected $fillable = ["title" ];
 
  
     public function comments(){

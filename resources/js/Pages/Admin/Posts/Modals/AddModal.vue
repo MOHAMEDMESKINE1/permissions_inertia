@@ -22,23 +22,27 @@ const toast = useToast();
 const page = usePage();
 const isLoading = ref(false)
 
-const form =useForm({
-    title:'',
-    body:'',
+const formPost =useForm({
+    title:null,
+    body:null,
     tags:[],
-    image:''
+    image:null
    
 });
 const tags = computed(()=> page.props.tags)
 const addPost = () => {
-    form.post(route('posts.store'),{
+    
+    formPost.post(route('posts.store'),{
         onSuccess : () => {
             onClose(true)
             toast.add({ severity: 'success', summary: ' Bien Ajouté', detail: '', life: 3000 });
-            form.reset()
+            formPost.reset()
 
         },
-        only:['tags']
+
+        only:['tags'],
+       
+
     });
 };
 
@@ -70,13 +74,13 @@ onMounted(()=>{
                             id="title"
                             type="title"
                             class="mt-1 p-2 border block w-full"
-                            v-model="form.title"
+                            v-model="formPost.title"
                             autofocus
                             autocomplete="title"
                         />
 
-                        <LabelValidation v-if="form.errors.title" class='mt-2' type='error'>
-                            {{ form . errors . title }}</LabelValidation>
+                        <LabelValidation v-if="formPost.errors.title" class='mt-2' type='error'>
+                            {{ formPost . errors . title }}</LabelValidation>
                     </div>
                     <div>
                         <Label for="comment">comment</Label>
@@ -85,26 +89,26 @@ onMounted(()=>{
                             id="comment"
                             type="comment"
                             class="mt-1 p-2 border block w-full"
-                            v-model="form.body"
+                            v-model="formPost.body"
                             autofocus
                             autocomplete="comment"
                         />
 
-                        <LabelValidation v-if="form.errors.body" class='mt-2' type='error'>
-                            {{ form . errors . body }}</LabelValidation>
+                        <LabelValidation v-if="formPost.errors.body" class='mt-2' type='error'>
+                            {{ formPost . errors . body }}</LabelValidation>
                     </div>
 
                     <div>
                         <Label for="image">Image</Label>
 
-                        <FileInput   @input="form.image=$event.target.files[0]" id='image-file' />
+                        <FileInput   @input="formPost.image=$event.target.files[0]" id='image-file' />
 
-                        <LabelValidation v-if="form.errors.image" class='mt-2' type='error'>
+                        <LabelValidation v-if="formPost.errors.image" class='mt-2' type='error'>
                             {{ form . errors . image }}</LabelValidation>
                     </div>
                     <div v-if="!isLoading" class="mt-3">
-                        <Select v-model='form.tags' 
-                        :selectItem='form.tags'
+                        <Select v-model='formPost.tags' 
+                        :selectItem='formPost.tags'
                         :Items='tags' 
                         filter 
                         :options='tags' 
@@ -113,8 +117,8 @@ onMounted(()=>{
                         optionLabel='name'
                         placeholder='Sélectionner une tag' /> 
 
-                        <LabelValidation v-if="form.errors.tags" class='mt-2' type='error'>
-                            {{ form . errors . tags }}</LabelValidation>
+                        <LabelValidation v-if="formPost.errors.tags" class='mt-2' type='error'>
+                            {{ formPost . errors . tags }}</LabelValidation>
                     </div>
                     <div v-else>
                         loading tags ...
@@ -127,7 +131,7 @@ onMounted(()=>{
      
                 <template #footer>
                     <div class="mt-4">
-                        <Button  @click="addPost" class="mx-2" color="success"  :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        <Button  @click="addPost" class="mx-2" color="success"  :class="{ 'opacity-25': formPost.processing }" :disabled="formPost.processing">
                             Enregistrer
                         </Button>
                         <Button   @click="closeModal">Cancel</Button>
