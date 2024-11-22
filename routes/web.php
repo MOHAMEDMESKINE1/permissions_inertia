@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminConTroller;
+use App\Http\Controllers\CoashMailController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Telescope\Http\Controllers\MailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +21,10 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::controller(CoashMailController::class)->group(function(){
+   
+    Route::get('mail','mail')->name('mail');
+});
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),

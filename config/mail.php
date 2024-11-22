@@ -13,7 +13,8 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'smtp'),
+    // 'default' => env('MAIL_MAILER', 'smtp'),
+    'default' =>  'mailcoach',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +35,16 @@ return [
     */
 
     'mailers' => [
+        'mailcoach' => [
+            'transport' => 'mailcoach',
+            // 'domain' => 'mailcoach.cloud',
+            'domain' => 'med.mailcoach.app',
+            'token' => '85WZRu9v1qbco1LzhsV6lhLkCpka0TZzc1zLBZst5f8470fa',
+            // 'from' => [
+            // 'address' => 'med@mailcoach.cloud', // Verified email
+            // 'name' => 'Mohamed Meskine',
+        // ],
+        ],
         'smtp' => [
             'transport' => 'smtp',
             'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
